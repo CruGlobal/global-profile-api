@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160330185413) do
+ActiveRecord::Schema.define(version: 20160331201240) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -25,6 +25,18 @@ ActiveRecord::Schema.define(version: 20160330185413) do
     t.datetime "updated_at", null: false
   end
 
+  add_index "areas", ["code"], name: "index_areas_on_code", unique: true, using: :btree
+  add_index "areas", ["gr_id"], name: "index_areas_on_gr_id", unique: true, using: :btree
+
+  create_table "countries", force: :cascade do |t|
+    t.string   "iso_code"
+    t.string   "name"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  add_index "countries", ["iso_code"], name: "index_countries_on_iso_code", unique: true, using: :btree
+
   create_table "ministries", force: :cascade do |t|
     t.uuid     "gr_id"
     t.string   "name"
@@ -35,6 +47,9 @@ ActiveRecord::Schema.define(version: 20160330185413) do
     t.integer  "area_id"
     t.boolean  "active",     default: false, null: false
   end
+
+  add_index "ministries", ["gr_id"], name: "index_ministries_on_gr_id", unique: true, using: :btree
+  add_index "ministries", ["min_code"], name: "index_ministries_on_min_code", unique: true, using: :btree
 
   add_foreign_key "ministries", "areas", on_update: :cascade, on_delete: :nullify
 end

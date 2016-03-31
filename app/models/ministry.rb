@@ -7,9 +7,12 @@ class Ministry < ActiveRecord::Base
 
   class << self
     def refresh_from_gr
+      all_min_codes = []
       gr_client.get_all_pages(DEFAULT_GR_PARAMS) do |entity|
-        create_or_update_from_entity(entity['ministry'])
+        ministry = create_or_update_from_entity(entity['ministry'])
+        all_min_codes << ministry.min_code if ministry.present?
       end
+      where.not(min_code: all_min_codes).delete_all
       all
     end
 
