@@ -23,12 +23,12 @@ if ENV['COVERALLS_REPO_TOKEN']
 end
 
 # Sidekiq Testing
-require 'sidekiq/testing'
-require 'rspec-sidekiq'
-Sidekiq::Testing.fake!
-RSpec::Sidekiq.configure do |config|
-  config.warn_when_jobs_not_processed_by_sidekiq = false
-end
+# require 'sidekiq/testing'
+# require 'rspec-sidekiq'
+# Sidekiq::Testing.fake!
+# RSpec::Sidekiq.configure do |config|
+#   config.warn_when_jobs_not_processed_by_sidekiq = false
+# end
 
 # WebMock
 require 'webmock/rspec'

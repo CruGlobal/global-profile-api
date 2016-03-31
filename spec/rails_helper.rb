@@ -30,4 +30,7 @@ RSpec.configure do |config|
 
   # This adds automatic meta-data for specs by location (e.g. for controllers)
   config.infer_spec_type_from_file_location!
+
+  config.include FactoryGirl::Syntax::Methods
+  config.include AuthenticationHelpers
 end

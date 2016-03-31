@@ -306,6 +306,7 @@ DEPENDENCIES
   dotenv-rails
   factory_girl_rails
   fakeredis
+  global_registry
   guard-rspec
   guard-rubocop
   http_logger
