@@ -4,6 +4,7 @@ Rails.application.routes.draw do
 
   api_version(module: 'V1', path: { value: 'v1' }) do
     resources :countries, only: [:index]
+    resources :languages, only: [:index]
     resources :ministries, only: [:index]
     resources :people, only: [:index, :show, :create, :update, :destroy]
   end
