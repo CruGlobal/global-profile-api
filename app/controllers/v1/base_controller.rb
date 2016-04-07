@@ -6,8 +6,6 @@ module V1
     protected
 
     def current_user
-      return nil unless @access_token
-      # TODO: implement
       nil
     end
 

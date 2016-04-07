@@ -5,7 +5,7 @@
 #   git config --global core.excludesfile '~/.gitignore_global'
 
 # Rails
-/.bundle
+.bundle
 vendor/ruby
 .rspec
 /tmp
