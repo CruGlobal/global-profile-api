@@ -78,7 +78,7 @@ module V1
     end
 
     def render_profile
-      render json: @profile, status: ok, serializer: V1::ProfileSerializer unless @profile.blank?
+      render json: @profile, status: :ok, serializer: V1::ProfileSerializer unless @profile.blank?
     end
 
     def render_errors
