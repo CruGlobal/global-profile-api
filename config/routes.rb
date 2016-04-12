@@ -7,5 +7,6 @@ Rails.application.routes.draw do
     resources :languages, only: [:index]
     resources :ministries, only: [:index]
     resources :people, only: [:index, :show, :create, :update, :destroy]
+    resource :user, only: [:show]
   end
 end

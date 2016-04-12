@@ -6,7 +6,7 @@ module V1
     protected
 
     def current_user
-      nil
+      @access_token
     end
 
     def render_error(message, options = {})

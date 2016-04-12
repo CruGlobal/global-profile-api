@@ -6,7 +6,7 @@ module V1
 
     # Current Power must be defined before powers
     current_power do
-      Power.new(@access_token.key_guid, ministry)
+      Power.new(current_user.key_guid, ministry)
     end
 
     power :profiles, as: :profile_scope

@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160406173303) do
+ActiveRecord::Schema.define(version: 20160407205155) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -115,6 +115,16 @@ ActiveRecord::Schema.define(version: 20160406173303) do
 
   add_index "people", ["gr_id", "ministry_id"], name: "index_people_on_gr_id_and_ministry_id", unique: true, using: :btree
   add_index "people", ["ministry_id"], name: "index_people_on_ministry_id", using: :btree
+
+  create_table "user_roles", force: :cascade do |t|
+    t.uuid     "key_guid",               null: false
+    t.uuid     "ministry",               null: false
+    t.integer  "role",       default: 0, null: false
+    t.datetime "created_at",             null: false
+    t.datetime "updated_at",             null: false
+  end
+
+  add_index "user_roles", ["key_guid", "ministry"], name: "index_user_roles_on_key_guid_and_ministry", unique: true, using: :btree
 
   add_foreign_key "assignments", "ministries", on_update: :cascade, on_delete: :restrict
   add_foreign_key "assignments", "people", on_update: :cascade, on_delete: :restrict
