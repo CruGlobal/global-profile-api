@@ -18,8 +18,7 @@ class Ministry < ActiveRecord::Base
       access_token = system_client.find(gr_system_permalink)&.dig('system', 'access_token')
     rescue RestClient::BadRequest
       # Create System
-      access_token = system_client.post({ system: { name: "Global Profile - #{min_code}",
-                                                    permalink: gr_system_permalink } },
+      access_token = system_client.post({ system: { name: "Global Profile - #{min_code}" } },
                                         params: { full_response: 'true' })&.dig('system', 'access_token')
     end
     update(gp_key: access_token) if access_token.present?
