@@ -12,21 +12,21 @@ module V1
     power :profiles, as: :profile_scope
 
     def index
-      # if leader?
-      refresh_profiles if bool_value(params[:refresh])
-      load_profiles
-      render_profiles
-      # else
-      #   params[:id] = current_person_gr_id
-      #   load_profile
-      #   render_profile
-      # end
+      if Power.current.admin?
+        refresh_profiles if bool_value(params[:refresh])
+        load_profiles
+        render_profiles
+      else
+        params[:id] = Power.current.person_id
+        load_profile
+        render_profile or render_not_found
+      end
     end
 
     def show
       refresh_profile if bool_value(params[:refresh])
       load_profile
-      render_profile
+      render_profile or render_not_found
     end
 
     def create
@@ -58,19 +58,21 @@ module V1
     end
 
     def build_profile
-      @profile ||= profile_scope.new
+      gr_id = params[:id] || params[:person_id]
+      return nil unless gr_id.present?
+      @profile ||= profile_scope.new(gr_id: gr_id)
       @profile.attributes = profile_params
       @profile.save
     end
 
     def load_profiles
-      @profiles ||= profile_scope.where(ministry: ministry)
+      @profiles ||= profile_scope
     end
 
     def load_profile
       gr_id = params[:id] || params[:person_id]
       return nil unless gr_id.present?
-      @profile ||= profile_scope.find_by(ministry: ministry, gr_id: gr_id)
+      @profile ||= profile_scope.find_by(gr_id: gr_id)
     end
 
     def render_profiles
@@ -82,7 +84,7 @@ module V1
     end
 
     def render_errors
-      render json: @story.errors.messages, status: :bad_request
+      render json: @profile.errors.messages, status: :bad_request
     end
 
     def refresh_profiles

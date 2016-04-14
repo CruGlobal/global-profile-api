@@ -14,10 +14,14 @@ class Power
   end
 
   power :profiles do
-    V1::UserUpdatedPerson.all
+    if admin?
+      V1::UserUpdatedPerson.where(ministry: ministry)
+    else
+      V1::UserUpdatedPerson.where(ministry: ministry, gr_id: person_id)
+    end
   end
 
   def admin?
-    role.try(:admin?) == true
+    role.try(:admin?)
   end
 end
