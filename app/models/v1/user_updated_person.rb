@@ -15,6 +15,8 @@ module V1
         attributes[:ministry] = Ministry.for_gr_id(ministry_gr_id) if ministry_gr_id.present?
         attributes
       end
+      ids = collection.map { |a| a[:id] }.compact
+      assignments.where.not(id: ids).delete_all
       super collection
     end
 
@@ -33,7 +35,7 @@ module V1
       attributes = Array.wrap(collection).first
       email = email_address
       if attributes.key?(:email)
-        email = email_addresses.build unless email.blank?
+        email = email_addresses.build if email.blank?
         email.update(email: attributes[:email], primary: true)
       elsif email.present?
         email.destroy
