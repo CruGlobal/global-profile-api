@@ -12,6 +12,19 @@ class Assignment < ActiveRecord::Base
   belongs_to :person
   belongs_to :ministry
 
+  after_destroy :destroy_gr_relationship, if: 'gr_id.present?'
+
+  def as_gr_relationship
+    { ministry: ministry.try(:gr_id), mcc: mcc, position_role: position_role, scope: scope,
+      client_integration_id: id, ministry_of_service: true }
+  end
+
+  private
+
+  def destroy_gr_relationship
+    person.ministry.gr_ministry_client.entity.delete(gr_id)
+  end
+
   class << self
     def create_or_update_from_relationship(relationship)
       assignment = find_or_initialize_by(gr_id: relationship['relationship_entity_id'])

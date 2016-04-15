@@ -63,6 +63,10 @@ module V1
       @profile ||= profile_scope.new(gr_id: gr_id)
       @profile.attributes = profile_params
       @profile.save
+      @profile.reload
+    rescue RestClient::BadRequest, RestClient::InternalServerError
+      # after_save must raise error to force ROLLBACK, we need to catch it here
+      false
     end
 
     def load_profiles

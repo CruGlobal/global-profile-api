@@ -16,6 +16,9 @@ class Employment < ActiveRecord::Base
   belongs_to :person
   belongs_to :ministry
 
+  before_save :update_volunteer_ministry
+  after_destroy :destroy_gr_relationship, if: 'gr_id.present?'
+
   def organizational_status
     value = super
     value = 'Other' if value == 'Other_Status'
@@ -36,6 +39,27 @@ class Employment < ActiveRecord::Base
   def funding_source=(value)
     value = 'Other_Source' if value.to_s == 'Other'
     super
+  end
+
+  def as_gr_relationship
+    { ministry: ministry.try(:gr_id), funding_source: funding_source,
+      organizational_status: organizational_status, client_integration_id: id,
+      date_joined_staff: date_joined_staff.try(:strftime, '%Y-%m-%d'),
+      date_left_staff: date_left_staff.try(:strftime, '%Y-%m-%d'),
+      ministry_of_employment: true }
+  end
+
+  private
+
+  def destroy_gr_relationship
+    person.ministry.gr_ministry_client.entity.delete(gr_id)
+  end
+
+  def update_volunteer_ministry
+    # Volunteers are with the current ministry
+    if organizational_status == 'Volunteer' && Power.current
+      self.ministry = Power.current.ministry
+    end
   end
 
   class << self

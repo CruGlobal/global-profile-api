@@ -16,7 +16,7 @@ module V1
         attributes
       end
       ids = collection.map { |a| a[:id] }.compact
-      assignments.where.not(id: ids).delete_all
+      assignments.where.not(id: ids).destroy_all
       super collection
     end
 

@@ -19,8 +19,83 @@ class Person < ActiveRecord::Base
   has_one :employment, dependent: :destroy
   has_many :email_addresses, dependent: :destroy
 
+  after_save :push_to_gr
+  after_destroy :destroy_gr_entity, if: 'gr_id.present?'
+
   def email_address
     email_addresses.order(primary: :desc, updated_at: :desc).limit(1).first
+  end
+
+  private
+
+  def push_to_gr
+    # Person table also holds people for authentication, they do no not have a ministry_id
+    return unless ministry.present?
+    response = ministry.gr_ministry_client.entity.post({ entity: as_gr_entity }, params: { full_response: true })
+    update_gr_ids_from_entity(response.dig('entity', 'person'))
+  rescue RestClient::BadRequest, RestClient::InternalServerError => error
+    errors.add :base, error.message
+    raise error
+  end
+
+  def as_gr_entity
+    entity = { birth_date: birth_date.try(:strftime, '%Y-%m-%d'), client_integration_id: id,
+               country_of_residence: country_of_residence, first_name: first_name, gender: gender,
+               is_secure: is_secure?, authentication: { key_guid: key_guid }, language: language,
+               last_name: last_name, marital_status: marital_status, preferred_name: preferred_name }
+    entity[:email_address] = [email_address.as_entity] if email_address.present?
+    entity['ministry:relationship'] = entity_ministry_relationship.compact
+    { person: entity }
+  end
+
+  def entity_ministry_relationship
+    relationships = assignments.map(&:as_gr_relationship)
+    relationships << employment.as_gr_relationship
+    relationships
+  end
+
+  def update_gr_ids_from_entity(entity)
+    # Use update_column to skip callbacks and just update the database
+    update_column(:gr_id, entity['id'])
+    update_email_gr_ids_from_entity(entity)
+    update_relationship_ids_from_entity(entity)
+  end
+
+  def update_email_gr_ids_from_entity(entity)
+    Array.wrap(entity['email_address']).each do |email_entity|
+      begin
+        email = email_addresses.find(cid_from_entity(email_entity))
+        email.update_column(:gr_id, email_entity['id']) if email_entity.present?
+      rescue ActiveRecord::RecordNotFound
+        next
+      end
+    end
+  end
+
+  def update_relationship_ids_from_entity(entity)
+    Array.wrap(entity['ministry:relationship']).each do |rel_entity|
+      begin
+        if rel_entity['ministry_of_service']
+          relationship = assignments.find(cid_from_entity(rel_entity))
+          relationship.update_column(:gr_id, rel_entity['relationship_entity_id']) if relationship.present?
+        elsif rel_entity['ministry_of_employment']
+          if employment.id.to_s == cid_from_entity(rel_entity)
+            employment.update_column(:gr_id, rel_entity['relationship_entity_id'])
+          end
+        end
+      rescue ActiveRecord::RecordNotFound
+        next
+      end
+    end
+  end
+
+  def cid_from_entity(entity)
+    return entity['client_integration_id']['value'] if entity['client_integration_id'].is_a? Hash
+    entity['client_integration_id']
+  end
+
+  def destroy_gr_entity
+    ministry.gr_ministry_client.entity.delete(gr_id)
   end
 
   class << self
