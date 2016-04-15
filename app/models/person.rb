@@ -95,6 +95,8 @@ class Person < ActiveRecord::Base
   end
 
   def destroy_gr_entity
+    # Person table also holds people for authentication, they do no not have a ministry_id
+    return unless ministry.present?
     ministry.gr_ministry_client.entity.delete(gr_id)
   end
 
