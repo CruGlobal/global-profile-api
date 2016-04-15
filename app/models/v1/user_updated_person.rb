@@ -1,9 +1,13 @@
 # frozen_string_literal: true
 module V1
   class UserUpdatedPerson < ::Person
+    attr_accessor :key_username
+
     accepts_nested_attributes_for :assignments
     accepts_nested_attributes_for :employment
     accepts_nested_attributes_for :email_addresses
+
+    before_save :lookup_guid_from_username, if: 'gr_id.blank?'
 
     def assignments_attributes=(collection)
       collection = collection.map do |attributes|
@@ -40,6 +44,14 @@ module V1
       elsif email.present?
         email.destroy
       end
+    end
+
+    def lookup_guid_from_username
+      return unless key_username.present?
+      attributes = TheKey::UserAttributes.new(email: key_username).cas_attributes
+      self.key_guid = attributes['theKeyGuid'] if attributes.key?('theKeyGuid')
+    rescue RestClient::ResourceNotFound
+      nil
     end
   end
 end

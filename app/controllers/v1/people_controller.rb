@@ -100,7 +100,7 @@ module V1
     end
 
     def profile_params
-      permitted_params = params.permit(*Person::PERMITTED_ATTRIBUTES)
+      permitted_params = params.permit(*Person::PERMITTED_ATTRIBUTES, :key_username)
       permitted_params[:ministry] = ministry
       permitted_params[:assignments_attributes] =
         params.permit(assignments: [Assignment::PERMITTED_ATTRIBUTES])[:assignments]
