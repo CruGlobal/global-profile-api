@@ -57,13 +57,14 @@ module V1
       @ministry ||= Ministry.for_gr_id(params[:ministry_id])
     end
 
+    def gr_id
+      params[:id] || params[:person_id]
+    end
+
     def build_profile
-      gr_id = params[:id] || params[:person_id]
-      return nil unless gr_id.present?
-      @profile ||= profile_scope.new(gr_id: gr_id)
+      @profile ||= profile_scope.new
       @profile.attributes = profile_params
-      @profile.save
-      @profile.reload
+      @profile.reload if @profile.save
     rescue RestClient::BadRequest, RestClient::InternalServerError
       # after_save must raise error to force ROLLBACK, we need to catch it here
       false
@@ -74,9 +75,7 @@ module V1
     end
 
     def load_profile
-      gr_id = params[:id] || params[:person_id]
-      return nil unless gr_id.present?
-      @profile ||= profile_scope.find_by(gr_id: gr_id)
+      @profile ||= profile_scope.find_by(gr_id: gr_id) unless gr_id.present?
     end
 
     def render_profiles
@@ -101,6 +100,7 @@ module V1
 
     def profile_params
       permitted_params = params.permit(*Person::PERMITTED_ATTRIBUTES, :key_username)
+      permitted_params[:gr_id] = gr_id
       permitted_params[:ministry] = ministry
       permitted_params[:assignments_attributes] =
         params.permit(assignments: [Assignment::PERMITTED_ATTRIBUTES])[:assignments]
