@@ -44,7 +44,8 @@ class Person < ActiveRecord::Base
                is_secure: is_secure?, authentication: { key_guid: key_guid }, language: language,
                last_name: last_name, marital_status: marital_status, preferred_name: preferred_name }
     entity[:email_address] = [email_address.as_entity] if email_address.present?
-    entity['ministry:relationship'] = entity_ministry_relationship.compact
+    entity['ministry:relationship'] = entity_ministry_relationship
+    entity.deep_compact!
     { person: entity }
   end
 
