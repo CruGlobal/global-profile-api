@@ -75,7 +75,7 @@ module V1
     end
 
     def load_profile
-      @profile ||= profile_scope.find_by(gr_id: gr_id) unless gr_id.present?
+      @profile ||= profile_scope.find_by(gr_id: gr_id) if gr_id.present?
     end
 
     def render_profiles
