@@ -46,7 +46,7 @@ class Employment < ActiveRecord::Base
       organizational_status: organizational_status, client_integration_id: id,
       date_joined_staff: date_joined_staff.try(:strftime, '%Y-%m-%d'),
       date_left_staff: date_left_staff.try(:strftime, '%Y-%m-%d'),
-      ministry_of_employment: true }.deep_compact!
+      ministry_of_employment: true }
   end
 
   private

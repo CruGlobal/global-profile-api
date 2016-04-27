@@ -16,7 +16,7 @@ class Assignment < ActiveRecord::Base
 
   def as_gr_relationship
     { ministry: ministry.try(:gr_id), mcc: mcc, position_role: position_role, scope: scope,
-      client_integration_id: id, ministry_of_service: true }.deep_compact!
+      client_integration_id: id, ministry_of_service: true }
   end
 
   private

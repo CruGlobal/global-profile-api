@@ -44,14 +44,14 @@ class Person < ActiveRecord::Base
                is_secure: is_secure?, authentication: { key_guid: key_guid }, language: language,
                last_name: last_name, marital_status: marital_status, preferred_name: preferred_name }
     entity[:email_address] = [email_address.as_entity] if email_address.present?
-    entity['ministry:relationship'] = entity_ministry_relationship
-    { person: entity }.deep_compact!
+    entity['ministry:relationship'] = entity_ministry_relationship.compact
+    { person: entity }
   end
 
   def entity_ministry_relationship
     relationships = assignments.map(&:as_gr_relationship)
     relationships << employment.as_gr_relationship
-    relationships.deep_compact!
+    relationships
   end
 
   def update_gr_ids_from_entity(entity)
