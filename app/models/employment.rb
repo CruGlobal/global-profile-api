@@ -11,7 +11,7 @@ class Employment < ActiveRecord::Base
                          'Hybrid' => 4 }
 
   PERMITTED_ATTRIBUTES = [:organizational_status, :funding_source, :date_joined_staff, :date_left_staff,
-                          :ministry_of_employment].freeze
+                          :ministry_of_employment, :staff_account].freeze
 
   belongs_to :person
   belongs_to :ministry
@@ -42,11 +42,10 @@ class Employment < ActiveRecord::Base
   end
 
   def as_gr_relationship
-    { ministry: ministry.try(:gr_id), funding_source: funding_source,
-      organizational_status: organizational_status, client_integration_id: id,
+    { ministry: ministry.try(:gr_id), funding_source: funding_source, staff_account: staff_account,
+      organizational_status: organizational_status, client_integration_id: "global_profile:employment:#{id}",
       date_joined_staff: date_joined_staff.try(:strftime, '%Y-%m-%d'),
-      date_left_staff: date_left_staff.try(:strftime, '%Y-%m-%d'),
-      ministry_of_employment: true }
+      date_left_staff: date_left_staff.try(:strftime, '%Y-%m-%d'), ministry_of_employment: true }
   end
 
   private
@@ -65,13 +64,14 @@ class Employment < ActiveRecord::Base
   class << self
     def create_or_update_from_relationship(relationship)
       employment = find_or_initialize_by(gr_id: relationship['relationship_entity_id'])
-      # Transform enum values
-      relationship['organizational_status'] = 'Other_Status' if relationship['organizational_status'] == 'Other'
-      relationship['funding_source'] = 'Other_Source' if relationship['funding_source'] == 'Other'
+      # # Transform enum values
+      # relationship['organizational_status'] = 'Other_Status' if relationship['organizational_status'] == 'Other'
+      # relationship['funding_source'] = 'Other_Source' if relationship['funding_source'] == 'Other'
       employment.update(date_joined_staff: relationship['date_joined_staff'],
                         date_left_staff: relationship['date_left_staff'],
                         organizational_status: relationship['organizational_status'],
                         funding_source: relationship['funding_source'],
+                        staff_account: relationship['staff_account'],
                         ministry: Ministry.for_gr_id(relationship['ministry']))
       employment
     end
