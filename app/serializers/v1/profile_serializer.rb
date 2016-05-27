@@ -4,7 +4,6 @@ module V1
     DATE_FORMAT = '%Y-%m-%d'
     attributes :approved,
                :birth_date,
-               :country_of_residence,
                :date_joined_staff,
                :date_left_staff,
                :first_name,
@@ -15,14 +14,21 @@ module V1
                :language,
                :last_name,
                :marital_status,
+               :marriage_date,
                :ministry_id,
                :ministry_of_employment,
                :organizational_status,
                :person_id,
                :preferred_name,
-               :email
+               :email,
+               :phone_number,
+               :skype_id,
+               :staff_account
 
     has_many :assignments, serializer: MinistryAssignmentSerializer
+    has_one :address, serializer: AddressSerializer
+    has_one :spouse, serializer: SpouseSerializer
+    has_many :children, serializer: ChildSerializer
 
     def person_id
       object.gr_id
@@ -40,6 +46,10 @@ module V1
       object.birth_date.try(:strftime, DATE_FORMAT)
     end
 
+    def marriage_date
+      object.marriage_date.try(:strftime, DATE_FORMAT)
+    end
+
     def date_joined_staff
       object.employment.try(:date_joined_staff).try(:strftime, DATE_FORMAT)
     end
@@ -49,17 +59,24 @@ module V1
     end
 
     def organizational_status
-      # return 'Other' if object.employment.try(:organizational_status) == 'Other_Status'
       object.employment.try(:organizational_status)
     end
 
     def funding_source
-      # return 'Other' if object.employment.try(:funding_source) == 'Other_Source'
       object.employment.try(:funding_source)
     end
 
-    def email
-      object.email_address.try(:email)
+    def staff_account
+      object.employment.try(:staff_account)
+    end
+
+    def children
+      # Concat person.children with spouse.children while removing duplicates
+      my_children = object.children.to_a
+      # step_children = object.spouse&.children.select(:first_name, :last_name, :birth_date).to_a || []
+      step_children = object.spouse&.children.to_a || []
+      my_children.concat(step_children)
+      my_children.uniq { |c| "#{c.first_name}:#{c.last_name}:#{c.birth_date.try(:strftime, DATE_FORMAT)}" }
     end
   end
 end

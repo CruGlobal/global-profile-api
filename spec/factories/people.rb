@@ -12,6 +12,5 @@ FactoryGirl.define do
     key_guid { SecureRandom.uuid }
     approved { [false, true].sample }
     is_secure { [false, true].sample }
-    country_of_residence { %w(USA GUE VGB JPN).sample }
   end
 end

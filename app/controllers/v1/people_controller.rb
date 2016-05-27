@@ -13,7 +13,7 @@ module V1
 
     def index
       if Power.current.admin?
-        refresh_profiles if bool_value(params[:refresh])
+        # refresh_profiles if bool_value(params[:refresh])
         load_profiles
         render_profiles
       else
@@ -24,7 +24,6 @@ module V1
     end
 
     def show
-      refresh_profile if bool_value(params[:refresh])
       load_profile
       render_profile or render_not_found
     end
@@ -64,9 +63,10 @@ module V1
     def build_profile
       @profile ||= profile_scope.new
       @profile.attributes = profile_params
+      @profile.set_spouse_from_attributes if @profile.respond_to? :set_spouse_from_attributes
       @profile.reload if @profile.save
     rescue RestClient::BadRequest, RestClient::InternalServerError
-      # after_save must raise error to force ROLLBACK, we need to catch it here
+      # after_save callback must raise error to force ROLLBACK, we need to catch it here
       false
     end
 
@@ -75,11 +75,11 @@ module V1
     end
 
     def load_profile
-      @profile ||= profile_scope.find_by(gr_id: gr_id) if gr_id.present?
+      @profile ||= profile_scope.find_by(gr_id: gr_id)
     end
 
     def render_profiles
-      render json: @profiles, status: :ok, each_serializer: V1::ProfileSerializer
+      render json: @profiles, status: :ok, each_serializer: V1::BasicProfileSerializer
     end
 
     def render_profile
@@ -94,19 +94,40 @@ module V1
       Person.refresh_from_gr(ministry)
     end
 
-    def refresh_profile
-      Person.for_gr_id(params[:id], ministry, true)
-    end
-
     def profile_params
       permitted_params = params.permit(*Person::PERMITTED_ATTRIBUTES, :key_username)
       permitted_params[:gr_id] = gr_id
       permitted_params[:ministry] = ministry
-      permitted_params[:assignments_attributes] =
-        params.permit(assignments: [Assignment::PERMITTED_ATTRIBUTES])[:assignments]
-      permitted_params[:employment_attributes] = params.permit(*Employment::PERMITTED_ATTRIBUTES)
-      permitted_params[:email_addresses_attributes] = [params.permit(:email)]
+      permitted_params[:assignments_attributes] = assignments_nested_params
+      permitted_params[:employment_attributes] = employment_nested_params
+      permitted_params[:address_attributes] = address_nested_params
+      permitted_params[:children_attributes] = children_nested_params
+      permitted_params[:spouse_attributes] = spouse_nested_params
       permitted_params
+    end
+
+    def assignments_nested_params
+      params.permit(assignments: Assignment::PERMITTED_ATTRIBUTES)[:assignments] if params.key?(:assignments)
+    end
+
+    def employment_nested_params
+      params.permit(*Employment::PERMITTED_ATTRIBUTES)
+    end
+
+    def address_nested_params
+      params.require(:address).permit(*Address::PERMITTED_ATTRIBUTES)
+    rescue ActionController::ParameterMissing
+      return nil
+    end
+
+    def children_nested_params
+      params.permit(children: Child::PERMITTED_ATTRIBUTES)[:children] if params.key?(:children)
+    end
+
+    def spouse_nested_params
+      params.require(:spouse).permit(*Spouse::PERMITTED_ATTRIBUTES)
+    rescue ActionController::ParameterMissing
+      return nil
     end
   end
 end
