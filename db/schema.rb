@@ -11,11 +11,28 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160407205155) do
+ActiveRecord::Schema.define(version: 20160526194901) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
   enable_extension "uuid-ossp"
+
+  create_table "addresses", force: :cascade do |t|
+    t.uuid     "gr_id"
+    t.integer  "person_id"
+    t.boolean  "current_address"
+    t.string   "line1"
+    t.string   "line2"
+    t.string   "line3"
+    t.string   "city"
+    t.string   "state"
+    t.string   "country"
+    t.string   "postal_code"
+    t.datetime "created_at",      null: false
+    t.datetime "updated_at",      null: false
+  end
+
+  add_index "addresses", ["person_id"], name: "index_addresses_on_person_id", using: :btree
 
   create_table "areas", force: :cascade do |t|
     t.uuid     "gr_id"
@@ -43,6 +60,18 @@ ActiveRecord::Schema.define(version: 20160407205155) do
   add_index "assignments", ["ministry_id"], name: "index_assignments_on_ministry_id", using: :btree
   add_index "assignments", ["person_id"], name: "index_assignments_on_person_id", using: :btree
 
+  create_table "children", force: :cascade do |t|
+    t.string   "first_name"
+    t.date     "birth_date"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.string   "last_name"
+    t.uuid     "gr_id"
+    t.integer  "person_id"
+  end
+
+  add_index "children", ["person_id"], name: "index_children_on_person_id", using: :btree
+
   create_table "countries", force: :cascade do |t|
     t.string   "iso_code"
     t.string   "name"
@@ -51,19 +80,6 @@ ActiveRecord::Schema.define(version: 20160407205155) do
   end
 
   add_index "countries", ["iso_code"], name: "index_countries_on_iso_code", unique: true, using: :btree
-
-  create_table "email_addresses", force: :cascade do |t|
-    t.uuid     "gr_id"
-    t.integer  "person_id"
-    t.string   "email"
-    t.boolean  "primary",    default: false, null: false
-    t.string   "location"
-    t.datetime "created_at",                 null: false
-    t.datetime "updated_at",                 null: false
-  end
-
-  add_index "email_addresses", ["gr_id"], name: "index_email_addresses_on_gr_id", unique: true, using: :btree
-  add_index "email_addresses", ["person_id"], name: "index_email_addresses_on_person_id", using: :btree
 
   create_table "employments", force: :cascade do |t|
     t.integer  "person_id"
@@ -75,6 +91,7 @@ ActiveRecord::Schema.define(version: 20160407205155) do
     t.integer  "funding_source",        default: 0, null: false
     t.datetime "created_at",                        null: false
     t.datetime "updated_at",                        null: false
+    t.string   "staff_account"
   end
 
   add_index "employments", ["gr_id"], name: "index_employments_on_gr_id", unique: true, using: :btree
@@ -101,16 +118,21 @@ ActiveRecord::Schema.define(version: 20160407205155) do
     t.string   "first_name"
     t.string   "last_name"
     t.string   "preferred_name"
-    t.integer  "gender",                         default: 0,     null: false
+    t.integer  "gender",         default: 0,     null: false
     t.date     "birth_date"
-    t.integer  "marital_status",                 default: 0,     null: false
-    t.string   "language",                       default: [],                 array: true
+    t.integer  "marital_status", default: 0,     null: false
+    t.string   "language",       default: [],                 array: true
     t.uuid     "key_guid"
-    t.boolean  "approved",                       default: true,  null: false
-    t.boolean  "is_secure",                      default: false, null: false
-    t.string   "country_of_residence", limit: 3
-    t.datetime "created_at",                                     null: false
-    t.datetime "updated_at",                                     null: false
+    t.boolean  "approved",       default: true,  null: false
+    t.boolean  "is_secure",      default: false, null: false
+    t.datetime "created_at",                     null: false
+    t.datetime "updated_at",                     null: false
+    t.integer  "spouse_id"
+    t.date     "marriage_date"
+    t.string   "skype_id"
+    t.string   "phone_number"
+    t.string   "email"
+    t.uuid     "spouse_rel_id"
   end
 
   add_index "people", ["gr_id", "ministry_id"], name: "index_people_on_gr_id_and_ministry_id", unique: true, using: :btree
@@ -126,9 +148,9 @@ ActiveRecord::Schema.define(version: 20160407205155) do
 
   add_index "user_roles", ["key_guid", "ministry"], name: "index_user_roles_on_key_guid_and_ministry", unique: true, using: :btree
 
+  add_foreign_key "addresses", "people", on_update: :cascade, on_delete: :cascade
   add_foreign_key "assignments", "ministries", on_update: :cascade, on_delete: :restrict
   add_foreign_key "assignments", "people", on_update: :cascade, on_delete: :restrict
-  add_foreign_key "email_addresses", "people", on_update: :cascade, on_delete: :cascade
   add_foreign_key "employments", "ministries"
   add_foreign_key "employments", "people"
   add_foreign_key "ministries", "areas", on_update: :cascade, on_delete: :nullify

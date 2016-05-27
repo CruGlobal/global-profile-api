@@ -17,16 +17,17 @@ RSpec.describe V1::ProfileSerializer do
                           funding_source: 'Hybrid', date_left_staff: Time.current.to_date)
     end
     let(:person) { create(:person, ministry: ministry, assignments: [assignment], employment: employment) }
-    let!(:email_address) { create(:email_address, person: person) }
     let(:serializer) { V1::ProfileSerializer.new(person) }
     let(:serialization) { ActiveModelSerializers::Adapter.create(serializer) }
     let(:json) { serialization.as_json }
 
     it 'has attributes' do
-      expect(json.keys).to contain_exactly(*%i(approved assignments birth_date country_of_residence date_joined_staff
+      expect(json.keys).to contain_exactly(*%i(approved assignments birth_date date_joined_staff
                                                date_left_staff email first_name funding_source gender
                                                is_secure key_guid language last_name marital_status ministry_id
-                                               ministry_of_employment organizational_status person_id preferred_name))
+                                               ministry_of_employment organizational_status person_id preferred_name
+                                               address children marriage_date phone_number skype_id spouse
+                                               staff_account))
       expect(json[:assignments]).to be_an(Array).and(all(include(*%i(assignment_id mcc ministry_id
                                                                      position_role scope))))
       expect(json[:language]).to be_an(Array).and(all(be_a(String)))
@@ -39,7 +40,6 @@ RSpec.describe V1::ProfileSerializer do
     it 'has correct values' do
       expect(json[:approved]).to eq person.approved
       expect(json[:birth_date]).to eq person.birth_date.strftime(V1::ProfileSerializer::DATE_FORMAT)
-      expect(json[:country_of_residence]).to eq person.country_of_residence
       expect(json[:date_joined_staff]).to eq employment.date_joined_staff.strftime(V1::ProfileSerializer::DATE_FORMAT)
       expect(json[:date_left_staff]).to eq employment.date_left_staff.strftime(V1::ProfileSerializer::DATE_FORMAT)
       expect(json[:first_name]).to eq person.first_name
