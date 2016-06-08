@@ -62,7 +62,7 @@ module V1
       # Destroy children missing from collection
       children.where.not(id: ids).destroy_all
       # Remove children belonging to spouse
-      spouse_ids = spouse&.children.ids
+      spouse_ids = spouse&.children&.ids
       collection.reject! { |c| spouse_ids.include? c['id'] } if spouse_ids.present?
       # Call super to add/update remaining children
       super collection
