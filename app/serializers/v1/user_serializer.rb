@@ -4,7 +4,7 @@ module V1
     attributes :key_guid, :email, :person_id, :first_name, :last_name, :admin
 
     def key_guid
-      object.access_token&.guid
+      object.access_token&.key_guid
     end
 
     def email
