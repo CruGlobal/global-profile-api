@@ -20,6 +20,7 @@ class Person < ActiveRecord::Base # rubocop:disable Metrics/ClassLength
   has_one :employment, dependent: :destroy
   has_one :address, dependent: :destroy
   has_many :children, dependent: :destroy, inverse_of: :parent, autosave: true
+  has_many :user_roles, foreign_key: :key_guid, class_name: 'UserRole', primary_key: :key_guid, inverse_of: :person
 
   after_destroy :destroy_gr_entity, if: 'gr_id.present?'
   before_save :update_gr_spouse_relationship, if: 'spouse_id_changed?'

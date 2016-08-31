@@ -6,6 +6,9 @@ class Ministry < ActiveRecord::Base
 
   belongs_to :area
   has_many :people
+  has_many :user_roles, foreign_key: :ministry, class_name: 'UserRole', primary_key: :gr_id, inverse_of: :gr_ministry
+
+  scope :with_gp_key, -> { where.not(gp_key: nil) }
 
   # Ministry specific GR client
   def gr_ministry_client
