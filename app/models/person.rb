@@ -12,7 +12,7 @@ class Person < ActiveRecord::Base # rubocop:disable Metrics/ClassLength
 
   enum gender: { 'Male' => 0, 'Female' => 1 }
   enum marital_status: { 'Single' => 0, 'Married' => 1, 'Engaged' => 2, 'Separated' => 3, 'Divorced' => 4,
-                         'Widowed' => 5 }
+                         'Widowed' => 5, 'Married to non-staff' => 6 }
 
   belongs_to :ministry
   belongs_to :spouse, foreign_key: :spouse_id, class_name: 'Person', inverse_of: :spouse, autosave: true
