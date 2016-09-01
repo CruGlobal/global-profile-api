@@ -43,7 +43,8 @@ class Person < ActiveRecord::Base # rubocop:disable Metrics/ClassLength
   def as_gr_entity # rubocop:disable Metrics/AbcSize
     entity = { last_name: last_name, first_name: first_name, preferred_name: preferred_name, gender: gender,
                birth_date: birth_date.try(:strftime, '%Y-%m-%d'), language: language, skype_id: skype_id,
-               marital_status: marital_status, marriage_date: marriage_date.try(:strftime, '%Y-%m-%d'),
+               marital_status: marital_status == 'Married to non-staff' ? 'Married' : marital_status,
+               marriage_date: marriage_date.try(:strftime, '%Y-%m-%d'),
                is_secure: is_secure?, authentication: { key_guid: key_guid }, client_integration_id: id }
     entity[:email_address] = { email: email, primary: true, client_integration_id: id } if email.present?
     entity[:address] = address.as_gr_entity if address.present?
