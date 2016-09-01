@@ -6,6 +6,9 @@ class Ministry < ActiveRecord::Base
 
   belongs_to :area
   has_many :people
+  has_many :user_roles, foreign_key: :ministry, class_name: 'UserRole', primary_key: :gr_id, inverse_of: :gr_ministry
+
+  scope :with_gp_key, -> { where.not(gp_key: nil) }
 
   # Ministry specific GR client
   def gr_ministry_client
@@ -27,6 +30,14 @@ class Ministry < ActiveRecord::Base
 
   def gr_system_permalink
     "#{GP_SYSTEM_PREFIX}#{min_code.downcase.tr(' ', '_')}"
+  end
+
+  def copy_admin_roles_to(other_ministry)
+    return if other_ministry.blank?
+    admin_role = UserRole.roles[:admin]
+    user_roles.where(role: admin_role).find_each do |my_user_role|
+      other_ministry.user_roles.find_or_create_by!(key_guid: my_user_role.key_guid, role: admin_role)
+    end
   end
 
   class << self
