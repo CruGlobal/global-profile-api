@@ -32,6 +32,14 @@ class Ministry < ActiveRecord::Base
     "#{GP_SYSTEM_PREFIX}#{min_code.downcase.tr(' ', '_')}"
   end
 
+  def copy_admin_roles_to(other_ministry)
+    return if other_ministry.blank?
+    admin_role = UserRole.roles[:admin]
+    user_roles.where(role: admin_role).find_each do |my_user_role|
+      other_ministry.user_roles.find_or_create_by!(key_guid: my_user_role.key_guid, role: admin_role)
+    end
+  end
+
   class << self
     def refresh_from_gr
       all_min_codes = []
