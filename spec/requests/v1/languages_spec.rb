@@ -11,7 +11,7 @@ RSpec.describe 'V1::Languages', type: :request do
 
         expect(response).to be_success
         expect(response).to have_http_status :ok
-        expect(json.size).to eq 222
+        expect(json.size).to eq 535
         expect(json.sample.keys).to contain_exactly('iso_code', 'native_name', 'is_rtl', 'english_name')
       end
     end
@@ -22,7 +22,7 @@ RSpec.describe 'V1::Languages', type: :request do
 
         expect(response).to be_success
         expect(response).to have_http_status :ok
-        expect(json.size).to eq 222
+        expect(json.size).to eq 535
         expect(json.sample.keys).to contain_exactly('iso_code', 'native_name', 'is_rtl', 'english_name')
       end
     end
