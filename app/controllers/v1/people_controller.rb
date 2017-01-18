@@ -48,6 +48,8 @@ module V1
     end
 
     def destroy
+      load_profile
+      @profile.destroy
     end
 
     private
