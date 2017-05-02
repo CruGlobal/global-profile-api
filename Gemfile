@@ -11,7 +11,7 @@ gem 'rollbar'
 gem 'syslog-logger'
 gem 'oj'
 gem 'oj_mimic_json'
-gem 'cru_lib', git: 'https://github.com/CruGlobal/cru_lib.git'
+gem 'cru-auth-lib', '~> 0.1.0'
 gem 'pg'
 gem 'redis-namespace'
 gem 'sinatra', :require => nil
