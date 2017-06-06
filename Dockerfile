@@ -5,7 +5,6 @@ ARG RAILS_ENV=production
 
 COPY Gemfile Gemfile.lock ./
 
-RUN bundle config gems.contribsys.com $SIDEKIQ_CREDS
 RUN bundle install --jobs 20 --retry 5 --path vendor --without development test
 RUN bundle binstub puma rake
 
