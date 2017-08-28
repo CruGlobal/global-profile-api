@@ -9,6 +9,13 @@ module V1
       render_ministries
     end
 
+    def update
+      ministry = Ministry.find_by(min_code: params[:id])
+      render status: 404, json: { error: "Ministry not found for country code #{ params[:id] } " } and return if ministry.nil?
+      ministry.activate_site
+      render status: 200, json: { success: "Ministry site activated for #{ ministry.name }" }
+    end
+
     private
 
     def filter_ministries

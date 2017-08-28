@@ -40,6 +40,44 @@ class Ministry < ActiveRecord::Base
     end
   end
 
+  def activate_site
+    add_default_admins
+    gr_ministry_client unless gp_key.present?
+  end
+
+  def add_default_admins
+    default_admin_key_guids.each { |guid| add_admin_by_key_guid(guid) }
+  end
+
+  def add_admin(email_or_guid)
+    if is_email(email_or_guid)
+      add_admin_by_email(email_or_guid)
+    else
+      add_admin_by_key_guid(email_or_guid)
+    end
+  end
+
+  def add_admin_by_email(email)
+    guid = TheKey::UserAttributes.new(email: email).cas_attributes['theKeyGuid']
+    add_admin_by_key_guid(guid)
+  end
+
+  def add_admin_by_key_guid(guid)
+    return if UserRole.exists?(key_guid: guid.downcase, ministry: gr_id)
+    admin_role = UserRole.roles[:admin]
+    UserRole.create(key_guid: guid.downcase, ministry: gr_id, role: admin_role)
+  end
+
+  private
+
+  def is_email(email)
+    email =~ /@/
+  end
+
+  def default_admin_key_guids
+    ENV.fetch('DEFAULT_ADMIN_KEY_GUIDS').split(",")
+  end
+
   class << self
     def refresh_from_gr
       all_min_codes = []
