@@ -197,35 +197,8 @@ RSpec.describe Ministry, type: :model do
     end
   end
 
-  context '.add_default_admins' do
-    it 'adds default admins' do
-      gr_id = SecureRandom.uuid
-      ministry = create(:ministry, min_code: 'GUE', gr_id: gr_id)
-      expect(ministry.user_roles.count).to eq 0
-
-      ministry.add_default_admins
-
-      default_admin_key_guids = ENV.fetch('DEFAULT_ADMIN_KEY_GUIDS').split(",")
-      expect(ministry.user_roles.count).to eq default_admin_key_guids.count
-      expect(ministry.user_roles.pluck(:key_guid)).to eq default_admin_key_guids
-    end
-
-    it 'does not duplicate default admins' do
-      gr_id = SecureRandom.uuid
-      ministry = create(:ministry, min_code: 'GUE', gr_id: gr_id)
-      expect(ministry.user_roles.count).to eq 0
-
-      ministry.add_default_admins
-      ministry.add_default_admins
-
-      default_admin_key_guids = ENV.fetch('DEFAULT_ADMIN_KEY_GUIDS').split(",")
-      expect(ministry.user_roles.count).to eq default_admin_key_guids.count
-      expect(ministry.user_roles.pluck(:key_guid)).to eq default_admin_key_guids
-    end
-  end
-
   context '.activate_site' do
-    it 'sets GP key and adds default admins' do
+    it 'sets GP key' do
       gr_id = SecureRandom.uuid
       ministry = create(:ministry, min_code: 'GUE', gr_id: gr_id)
       expect(ministry.user_roles.count).to eq 0
@@ -240,11 +213,8 @@ RSpec.describe Ministry, type: :model do
 
       ministry.activate_site
 
-      default_admin_key_guids = ENV.fetch('DEFAULT_ADMIN_KEY_GUIDS').split(",")
       expect(ministry.gp_key).not_to be_nil
       expect(ministry.gp_key).to eq 'abc'
-      expect(ministry.user_roles.count).to eq default_admin_key_guids.count
-      expect(ministry.user_roles.pluck(:key_guid)).to eq default_admin_key_guids
     end
 
   end

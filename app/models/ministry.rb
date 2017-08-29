@@ -41,12 +41,7 @@ class Ministry < ActiveRecord::Base
   end
 
   def activate_site
-    add_default_admins
     gr_ministry_client unless gp_key.present?
-  end
-
-  def add_default_admins
-    default_admin_key_guids.each { |guid| add_admin_by_key_guid(guid) }
   end
 
   def add_admin(email_or_guid)
@@ -72,10 +67,6 @@ class Ministry < ActiveRecord::Base
 
   def is_email(email)
     email =~ /@/
-  end
-
-  def default_admin_key_guids
-    ENV.fetch('DEFAULT_ADMIN_KEY_GUIDS').split(",")
   end
 
   class << self
