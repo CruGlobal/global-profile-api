@@ -63,6 +63,25 @@ class Ministry < ActiveRecord::Base
     UserRole.create(key_guid: guid.downcase, ministry: gr_id, role: admin_role)
   end
 
+  def remove_admin(email_or_guid)
+    if is_email(email_or_guid)
+      remove_admin_by_email(email_or_guid)
+    else
+      remove_admin_by_key_guid(email_or_guid)
+    end
+  end
+
+  def remove_admin_by_email(email)
+    guid = TheKey::UserAttributes.new(email: email).cas_attributes['theKeyGuid']
+    remove_admin_by_key_guid(guid)
+  end
+
+  def remove_admin_by_key_guid(guid)
+    role = UserRole.find_by(key_guid: guid.downcase, ministry: gr_id, role: UserRole.roles[:admin])
+    return if role.nil?
+    role.destroy
+  end
+
   private
 
   def is_email(email)

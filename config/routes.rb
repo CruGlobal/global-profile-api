@@ -8,6 +8,6 @@ Rails.application.routes.draw do
     resources :ministries, only: [:index, :update]
     resources :people, only: [:index, :show, :create, :update, :destroy]
     resource :user, only: [:show]
-    resource :user_roles, only: [:create]
+    resource :user_roles, only: [:create, :destroy]
   end
 end

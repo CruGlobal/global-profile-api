@@ -35,7 +35,7 @@ RSpec.describe 'V1::User', type: :request do
 
       it 'returns current user with admin roles' do
         min_guids = [SecureRandom.uuid, SecureRandom.uuid]
-        min_guids.each { |ministry| create(:user_role, key_guid: @key_guid, ministry: ministry, role: 0) }
+        min_guids.each { |ministry| create(:user_role, key_guid: @key_guid, ministry: ministry, role: UserRole.roles[:admin]) }
 
         get '/v1/user', nil, 'HTTP_AUTHORIZATION' => "Bearer #{@authenticate}"
 
@@ -48,7 +48,7 @@ RSpec.describe 'V1::User', type: :request do
       end
 
       it 'returns current user with superadmin bit' do
-        create(:user_role, key_guid: @key_guid, ministry: SecureRandom.uuid, role: 1)
+        create(:user_role, key_guid: @key_guid, ministry: SecureRandom.uuid, role: UserRole.roles[:superadmin])
 
         get '/v1/user', nil, 'HTTP_AUTHORIZATION' => "Bearer #{@authenticate}"
 

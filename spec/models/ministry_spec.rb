@@ -197,6 +197,38 @@ RSpec.describe Ministry, type: :model do
     end
   end
 
+  context '.remove_admin' do
+    it 'removes an admin by email' do
+      gr_id = SecureRandom.uuid
+      key_guid = SecureRandom.uuid
+      ministry = create(:ministry, min_code: 'GUE', gr_id: gr_id)
+      role = create(:user_role, key_guid: key_guid, ministry: gr_id, role: UserRole.roles[:admin])
+      expect(ministry.user_roles.count).to eq 1
+
+      user_attributes = instance_double('TheKey::UserAttributes')
+      allow(user_attributes).to receive(:cas_attributes) { {"theKeyGuid" => key_guid} }
+      allow(TheKey::UserAttributes).to receive(:new) { user_attributes }
+
+      ministry.remove_admin('john.doe@cru.org')
+
+      expect(role.key_guid).to eq key_guid
+      expect(ministry.user_roles.count).to eq 0
+    end
+
+    it 'removes an admin by uuid' do
+      gr_id = SecureRandom.uuid
+      key_guid = SecureRandom.uuid
+      ministry = create(:ministry, min_code: 'GUE', gr_id: gr_id)
+      role = create(:user_role, key_guid: key_guid, ministry: gr_id, role: UserRole.roles[:admin])
+      expect(ministry.user_roles.count).to eq 1
+
+      role = ministry.remove_admin(key_guid)
+
+      expect(role.key_guid).to eq key_guid
+      expect(ministry.user_roles.count).to eq 0
+    end
+  end
+
   context '.activate_site' do
     it 'sets GP key' do
       gr_id = SecureRandom.uuid

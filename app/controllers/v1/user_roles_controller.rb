@@ -9,20 +9,40 @@ module V1
       add_admin
     end
 
+    def destroy
+      @ministry = Ministry.find_by(min_code: params[:ministry])
+      render_error_not_found and return if @ministry.nil?
+      remove_admin
+    end
+
     private
 
     def add_admin
       admin = @ministry.add_admin(params[:admin])
-      render status: 200, json: {success: success_message(admin)}
+      render status: 200, json: {success: add_success_message(admin)}
+    end
+
+    def remove_admin
+      admin = @ministry.remove_admin(params[:admin])
+      if admin.nil?
+        render status: 404, json: {fail: remove_success_message(admin)}
+      else
+        render status: 200, json: {success: remove_success_message(admin)}
+      end
     end
 
     def render_error_not_found
       render status: 404, json: {error: "Ministry '#{ params[:ministry] }' not found"}
     end
 
-    def success_message(admin)
+    def add_success_message(admin)
       action_message = admin.nil? ? "Admin already exists for" : "added as admin to"
-      return_message = "#{ admin&.person&.first_name } #{ admin&.person&.last_name } #{ action_message } #{@ministry.min_code}"
+      return_message = "#{ admin&.person&.first_name } #{ admin&.person&.last_name } #{ action_message } #{@ministry.min_code}".strip
+    end
+
+    def remove_success_message(admin)
+      action_message = admin.nil? ? "Admin not found for" : "removed from"
+      return_message = "#{ admin&.person&.first_name } #{ admin&.person&.last_name } #{ action_message } #{@ministry.min_code}".strip
     end
   end
 end
