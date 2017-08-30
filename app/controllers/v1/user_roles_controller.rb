@@ -6,7 +6,6 @@ module V1
     def create
       @ministry = Ministry.find_by(min_code: params[:ministry])
       render_error_not_found and return if @ministry.nil?
-      add_default_admins and return if params[:admin].downcase == 'default'
       add_admin
     end
 
@@ -15,11 +14,6 @@ module V1
     def add_admin
       admin = @ministry.add_admin(params[:admin])
       render status: 200, json: {success: success_message(admin)}
-    end
-
-    def add_default_admins
-      @ministry.add_default_admins
-      render status: 200, json: { success: "Added default admins" }
     end
 
     def render_error_not_found
