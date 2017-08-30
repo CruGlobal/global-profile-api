@@ -132,7 +132,7 @@ RSpec.describe Ministry, type: :model do
       allow(user_attributes).to receive(:cas_attributes) { {"theKeyGuid" => key_guid} }
       allow(TheKey::UserAttributes).to receive(:new) { user_attributes }
 
-      ministry.add_admin_by_email('nathan.emerson@cru.org')
+      ministry.add_admin_by_email('john.doe@cru.org')
 
       expect(ministry.user_roles.count).to eq 1
       role = ministry.user_roles.first
@@ -151,7 +151,7 @@ RSpec.describe Ministry, type: :model do
       allow(user_attributes).to receive(:cas_attributes) { {"theKeyGuid" => key_guid} }
       allow(TheKey::UserAttributes).to receive(:new) { user_attributes }
 
-      ministry.add_admin_by_email('nathan.emerson@cru.org')
+      ministry.add_admin_by_email('john.doe@cru.org')
 
       expect(ministry.user_roles.count).to eq 1
       role = ministry.user_roles.first
@@ -172,7 +172,7 @@ RSpec.describe Ministry, type: :model do
       allow(user_attributes).to receive(:cas_attributes) { {"theKeyGuid" => key_guid} }
       allow(TheKey::UserAttributes).to receive(:new) { user_attributes }
 
-      ministry.add_admin('nathan.emerson@cru.org')
+      ministry.add_admin('john.doe@cru.org')
 
       expect(ministry.user_roles.count).to eq 1
       role = ministry.user_roles.first
@@ -201,7 +201,6 @@ RSpec.describe Ministry, type: :model do
     it 'sets GP key' do
       gr_id = SecureRandom.uuid
       ministry = create(:ministry, min_code: 'GUE', gr_id: gr_id)
-      expect(ministry.user_roles.count).to eq 0
       expect(ministry.gp_key).to be_nil
 
       #not sure how to fake this well...

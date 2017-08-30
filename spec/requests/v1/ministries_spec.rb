@@ -71,4 +71,38 @@ RSpec.describe 'V1::Ministries', type: :request do
       end
     end
   end
+
+  describe 'PUT /ministries/:min_code' do
+    context 'without a session' do
+      it 'responds with HTTP 401' do
+        get '/v1/ministries'
+
+        expect(response).not_to be_success
+        expect(response).to have_http_status :unauthorized
+      end
+    end
+
+    context 'with a session' do
+      it 'activates a ministry' do
+        ministry = instance_double('Ministry', min_code: 'GUE')
+        allow(ministry).to receive(:activate_site) { nil }
+        allow(ministry).to receive(:name) { 'Test' }
+        allow(Ministry).to receive(:find_by) { ministry }
+
+        put '/v1/ministries/GUE', nil, 'HTTP_AUTHORIZATION' => "Bearer #{authenticate_guid}"
+
+        expect(response).to be_success
+        expect(response).to have_http_status :ok
+        expect(ministry).to have_received(:activate_site)
+      end
+
+      it 'returns 404 for invalid ministry' do
+        put '/v1/ministries/DNE', nil, 'HTTP_AUTHORIZATION' => "Bearer #{authenticate_guid}"
+
+        expect(response).not_to be_success
+        expect(response).to have_http_status 404
+      end
+    end
+  end
+
 end
