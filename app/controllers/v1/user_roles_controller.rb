@@ -5,13 +5,13 @@ module V1
 
     def create
       @ministry = Ministry.find_by(min_code: params[:ministry])
-      render_error_not_found and return if @ministry.nil?
+      render_not_found and return if @ministry.nil?
       add_admin
     end
 
     def destroy
       @ministry = Ministry.find_by(min_code: params[:ministry])
-      render_error_not_found and return if @ministry.nil?
+      render_not_found and return if @ministry.nil?
       remove_admin
     end
 
@@ -29,10 +29,6 @@ module V1
       else
         render status: 200, json: { success: remove_success_message(admin) }
       end
-    end
-
-    def render_error_not_found
-      render status: 404, json: { error: "Ministry '#{params[:ministry]}' not found" }
     end
 
     def add_success_message(admin)
