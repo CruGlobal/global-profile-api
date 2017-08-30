@@ -11,9 +11,11 @@ module V1
 
     def update
       ministry = Ministry.find_by(min_code: params[:id])
-      render status: 404, json: { error: "Ministry not found for country code #{ params[:id] } " } and return if ministry.nil?
+      error_message = "Ministry not found for country code #{params[:id]}"
+      render status: 404, json: { error: error_message } and return if ministry.nil?
       ministry.activate_site
-      render status: 200, json: { success: "Ministry site activated for #{ ministry.name }" }
+      success_message = "Ministry site activated for #{ministry.name}"
+      render status: 200, json: { success: success_message }
     end
 
     private

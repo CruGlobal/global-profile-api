@@ -22,7 +22,9 @@ RSpec.describe 'V1::User_Roles', type: :request do
         allow(ministry).to receive(:add_admin) { role }
         allow(Ministry).to receive(:find_by) { ministry }
 
-        post '/v1/user_roles', {admin: 'John.Doe@cru.org', ministry: 'GUE'}, 'HTTP_AUTHORIZATION' => "Bearer #{authenticate_guid}"
+        post '/v1/user_roles',
+             { admin: 'John.Doe@cru.org', ministry: 'GUE' },
+             'HTTP_AUTHORIZATION' => "Bearer #{authenticate_guid}"
 
         expect(response).to be_success
         expect(response).to have_http_status :ok
@@ -30,14 +32,15 @@ RSpec.describe 'V1::User_Roles', type: :request do
       end
 
       it 'returns 404 for invalid ministry' do
-        post '/v1/user_roles/', {admin: 'John.Doe@cru.org', ministry: 'DNE'}, 'HTTP_AUTHORIZATION' => "Bearer #{authenticate_guid}"
+        post '/v1/user_roles/',
+             { admin: 'John.Doe@cru.org', ministry: 'DNE' },
+             'HTTP_AUTHORIZATION' => "Bearer #{authenticate_guid}"
 
         expect(response).not_to be_success
         expect(response).to have_http_status 404
       end
     end
   end
-
 
   describe 'DELETE /user_roles' do
     context 'without a session' do
@@ -58,7 +61,9 @@ RSpec.describe 'V1::User_Roles', type: :request do
         allow(ministry).to receive(:remove_admin) { role }
         allow(Ministry).to receive(:find_by) { ministry }
 
-        delete '/v1/user_roles', {admin: 'John.Doe@cru.org', ministry: 'GUE'}, 'HTTP_AUTHORIZATION' => "Bearer #{authenticate_guid}"
+        delete '/v1/user_roles',
+               { admin: 'John.Doe@cru.org', ministry: 'GUE' },
+               'HTTP_AUTHORIZATION' => "Bearer #{authenticate_guid}"
 
         expect(response).to be_success
         expect(response).to have_http_status :ok
@@ -66,7 +71,9 @@ RSpec.describe 'V1::User_Roles', type: :request do
       end
 
       it 'returns 404 for invalid ministry' do
-        delete '/v1/user_roles/', {admin: 'John.Doe@cru.org', ministry: 'DNE'}, 'HTTP_AUTHORIZATION' => "Bearer #{authenticate_guid}"
+        delete '/v1/user_roles/',
+               { admin: 'John.Doe@cru.org', ministry: 'DNE' },
+               'HTTP_AUTHORIZATION' => "Bearer #{authenticate_guid}"
 
         expect(response).not_to be_success
         expect(response).to have_http_status 404
@@ -77,12 +84,13 @@ RSpec.describe 'V1::User_Roles', type: :request do
         allow(ministry).to receive(:remove_admin) { nil }
         allow(Ministry).to receive(:find_by) { ministry }
 
-        delete '/v1/user_roles/', {admin: 'John.Doe@cru.org', ministry: 'DNE'}, 'HTTP_AUTHORIZATION' => "Bearer #{authenticate_guid}"
+        delete '/v1/user_roles/',
+               { admin: 'John.Doe@cru.org', ministry: 'DNE' },
+               'HTTP_AUTHORIZATION' => "Bearer #{authenticate_guid}"
 
         expect(response).not_to be_success
         expect(response).to have_http_status 404
       end
     end
   end
-
 end

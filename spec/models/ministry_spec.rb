@@ -129,7 +129,7 @@ RSpec.describe Ministry, type: :model do
       expect(ministry.user_roles.count).to eq 0
 
       user_attributes = instance_double('TheKey::UserAttributes')
-      allow(user_attributes).to receive(:cas_attributes) { {"theKeyGuid" => key_guid} }
+      allow(user_attributes).to receive(:cas_attributes) { { 'theKeyGuid' => key_guid } }
       allow(TheKey::UserAttributes).to receive(:new) { user_attributes }
 
       ministry.add_admin_by_email('john.doe@cru.org')
@@ -148,7 +148,7 @@ RSpec.describe Ministry, type: :model do
       expect(ministry.user_roles.count).to eq 0
 
       user_attributes = instance_double('TheKey::UserAttributes')
-      allow(user_attributes).to receive(:cas_attributes) { {"theKeyGuid" => key_guid} }
+      allow(user_attributes).to receive(:cas_attributes) { { 'theKeyGuid' => key_guid } }
       allow(TheKey::UserAttributes).to receive(:new) { user_attributes }
 
       ministry.add_admin_by_email('john.doe@cru.org')
@@ -169,7 +169,7 @@ RSpec.describe Ministry, type: :model do
       expect(ministry.user_roles.count).to eq 0
 
       user_attributes = instance_double('TheKey::UserAttributes')
-      allow(user_attributes).to receive(:cas_attributes) { {"theKeyGuid" => key_guid} }
+      allow(user_attributes).to receive(:cas_attributes) { { 'theKeyGuid' => key_guid } }
       allow(TheKey::UserAttributes).to receive(:new) { user_attributes }
 
       ministry.add_admin('john.doe@cru.org')
@@ -206,7 +206,7 @@ RSpec.describe Ministry, type: :model do
       expect(ministry.user_roles.count).to eq 1
 
       user_attributes = instance_double('TheKey::UserAttributes')
-      allow(user_attributes).to receive(:cas_attributes) { {"theKeyGuid" => key_guid} }
+      allow(user_attributes).to receive(:cas_attributes) { { 'theKeyGuid' => key_guid } }
       allow(TheKey::UserAttributes).to receive(:new) { user_attributes }
 
       ministry.remove_admin('john.doe@cru.org')
@@ -219,7 +219,7 @@ RSpec.describe Ministry, type: :model do
       gr_id = SecureRandom.uuid
       key_guid = SecureRandom.uuid
       ministry = create(:ministry, min_code: 'GUE', gr_id: gr_id)
-      role = create(:user_role, key_guid: key_guid, ministry: gr_id, role: UserRole.roles[:admin])
+      create(:user_role, key_guid: key_guid, ministry: gr_id, role: UserRole.roles[:admin])
       expect(ministry.user_roles.count).to eq 1
 
       role = ministry.remove_admin(key_guid)
@@ -235,7 +235,6 @@ RSpec.describe Ministry, type: :model do
       ministry = create(:ministry, min_code: 'GUE', gr_id: gr_id)
       expect(ministry.gp_key).to be_nil
 
-      #not sure how to fake this well...
       fake_system_client = instance_double('GlobalRegistry::System')
       allow(fake_system_client).to receive_message_chain(:find, :dig).and_return('abc')
       fake_gr_client = double('GlobalRegistryClient')
@@ -247,6 +246,5 @@ RSpec.describe Ministry, type: :model do
       expect(ministry.gp_key).not_to be_nil
       expect(ministry.gp_key).to eq 'abc'
     end
-
   end
 end

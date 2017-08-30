@@ -45,7 +45,7 @@ class Ministry < ActiveRecord::Base
   end
 
   def add_admin(email_or_guid)
-    if is_email(email_or_guid)
+    if email?(email_or_guid)
       add_admin_by_email(email_or_guid)
     else
       add_admin_by_key_guid(email_or_guid)
@@ -64,7 +64,7 @@ class Ministry < ActiveRecord::Base
   end
 
   def remove_admin(email_or_guid)
-    if is_email(email_or_guid)
+    if email?(email_or_guid)
       remove_admin_by_email(email_or_guid)
     else
       remove_admin_by_key_guid(email_or_guid)
@@ -84,7 +84,7 @@ class Ministry < ActiveRecord::Base
 
   private
 
-  def is_email(email)
+  def email?(email)
     email =~ /@/
   end
 

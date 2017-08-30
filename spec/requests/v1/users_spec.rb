@@ -24,7 +24,6 @@ RSpec.describe 'V1::User', type: :request do
 
     context 'with a session' do
       it 'returns current user' do
-
         get '/v1/user', nil, 'HTTP_AUTHORIZATION' => "Bearer #{@authenticate}"
 
         expect(response).to be_success
@@ -35,7 +34,9 @@ RSpec.describe 'V1::User', type: :request do
 
       it 'returns current user with admin roles' do
         min_guids = [SecureRandom.uuid, SecureRandom.uuid]
-        min_guids.each { |ministry| create(:user_role, key_guid: @key_guid, ministry: ministry, role: UserRole.roles[:admin]) }
+        min_guids.each do |ministry|
+          create(:user_role, key_guid: @key_guid, ministry: ministry, role: UserRole.roles[:admin])
+        end
 
         get '/v1/user', nil, 'HTTP_AUTHORIZATION' => "Bearer #{@authenticate}"
 
@@ -60,5 +61,4 @@ RSpec.describe 'V1::User', type: :request do
       end
     end
   end
-
 end

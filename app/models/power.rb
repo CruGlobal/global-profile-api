@@ -11,7 +11,7 @@ class Power
     @person_id = Person.gr_id_for_key_guid(guid)
     @ministry = ministry
     @role = UserRole.find_by(key_guid: guid, ministry: ministry.gr_id)
-    @superadmin = User::superadmin?(guid)
+    @superadmin = User.superadmin?(guid)
   end
 
   power :profiles do

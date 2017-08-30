@@ -104,5 +104,4 @@ RSpec.describe 'V1::Ministries', type: :request do
       end
     end
   end
-
 end
