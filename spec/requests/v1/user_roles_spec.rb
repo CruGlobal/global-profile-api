@@ -3,6 +3,11 @@ require 'rails_helper'
 
 RSpec.describe 'V1::User_Roles', type: :request do
   let(:json) { JSON.parse(response.body) }
+
+  before :each do
+    allow(Person).to receive(:gr_id_for_key_guid).and_return SecureRandom.uuid
+  end
+
   describe 'POST /user_roles' do
     context 'without a session' do
       it 'responds with HTTP 401' do

@@ -2,11 +2,6 @@
 module V1
   class BaseController < ApplicationController
     include CruAuthLib::AccessTokenProtectedConcern
-    include Consul::Controller
-
-    current_power do
-      Power.new(current_user&.key_guid)
-    end
 
     protected
 

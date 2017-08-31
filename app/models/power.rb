@@ -13,7 +13,7 @@ class Power
   end
 
   power :profiles do |ministry|
-    raise(Consul::Error, 'guid required') unless guid.present?
+    raise(Consul::Error, 'guid required') unless @guid.present?
     raise(Consul::Error, 'ministry required') unless ministry.present?
     @ministry ||= ministry
     @role ||= UserRole.find_by(key_guid: @guid, ministry: ministry.gr_id)

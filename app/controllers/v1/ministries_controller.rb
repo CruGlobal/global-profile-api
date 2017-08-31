@@ -1,8 +1,6 @@
 # frozen_string_literal: true
 module V1
-  class MinistriesController < BaseController
-    before_action :authenticate_request
-
+  class MinistriesController < AuthenticatedController
     def index
       refresh_ministries if bool_value(params[:refresh])
       filter_ministries
