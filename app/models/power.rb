@@ -4,17 +4,19 @@ class Power
 
   attr_reader :guid, :ministry, :person_id, :role, :superadmin
 
-  def initialize(guid, ministry)
-    raise(Consul::Error, 'GUID required') unless guid.present?
-    raise(Consul::Error, 'ministry required') unless ministry.present?
+  def initialize(guid)
     @guid = guid
-    @person_id = Person.gr_id_for_key_guid(guid)
-    @ministry = ministry
-    @role = UserRole.find_by(key_guid: guid, ministry: ministry.gr_id)
-    @superadmin = User.superadmin?(guid)
+    @ministry = nil
+    @role = nil
+    @person_id = Person.gr_id_for_key_guid(guid) unless guid.nil?
+    @superadmin = User.superadmin?(guid) unless guid.nil?
   end
 
-  power :profiles do
+  power :profiles do |ministry|
+    raise(Consul::Error, 'guid required') unless guid.present?
+    raise(Consul::Error, 'ministry required') unless ministry.present?
+    @ministry ||= ministry
+    @role ||= UserRole.find_by(key_guid: @guid, ministry: ministry.gr_id)
     if admin?
       V1::UserUpdatedPerson.where(ministry: ministry)
     else
