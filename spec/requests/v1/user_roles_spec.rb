@@ -147,4 +147,89 @@ RSpec.describe 'V1::User_Roles', type: :request do
       end
     end
   end
+
+  describe 'GET /user_roles' do
+    context 'without a session' do
+      it 'responds with HTTP 401' do
+        get '/v1/user_roles'
+
+        expect(response).not_to be_success
+        expect(response).to have_http_status :unauthorized
+      end
+    end
+
+    context 'with a session' do
+      it 'responds with HTTP 401 for non-superadmin' do
+        get '/v1/user_roles',
+            { ministry: 'GUE' },
+            'HTTP_AUTHORIZATION' => "Bearer #{authenticate}"
+
+        expect(response).not_to be_success
+        expect(response).to have_http_status :unauthorized
+      end
+
+      it 'returns single admin' do
+        create(:user_role, key_guid: user_key_guid, ministry: ministry_gr_id, role: UserRole.roles[:superadmin])
+        ministry = create(:ministry, min_code: 'GUE', gr_id: SecureRandom.uuid)
+        admin_key_guid = SecureRandom.uuid
+        admin_gr_id = SecureRandom.uuid
+        admin = create(:person, first_name: 'John', last_name: 'Doe', key_guid: admin_key_guid, gr_id: admin_gr_id)
+        ministry.add_admin(admin.key_guid)
+
+        admin_roles = UserRole.where(ministry: ministry.gr_id).count
+        expect(admin_roles).to eq 1
+
+        get '/v1/user_roles',
+            { ministry: 'GUE' },
+            'HTTP_AUTHORIZATION' => "Bearer #{authenticate}"
+
+        expect(response).to be_success
+        expect(response).to have_http_status :ok
+        expect(json.count).to eq 1
+        expect(json.first['key_guid']).to eq admin_key_guid
+        expect(json.first['first_name']).to eq 'John'
+        expect(json.first['last_name']).to eq 'Doe'
+      end
+
+      it 'returns multiple admins' do
+        create(:user_role, key_guid: user_key_guid, ministry: ministry_gr_id, role: UserRole.roles[:superadmin])
+        ministry = create(:ministry, min_code: 'GUE', gr_id: SecureRandom.uuid)
+        admin_key_guid = SecureRandom.uuid
+        admin_gr_id = SecureRandom.uuid
+        admin = create(:person, first_name: 'John', last_name: 'Doe', key_guid: admin_key_guid, gr_id: admin_gr_id)
+        ministry.add_admin(admin.key_guid)
+        admin2_key_guid = SecureRandom.uuid
+        admin2_gr_id = SecureRandom.uuid
+        admin2 = create(:person, first_name: 'Jane', last_name: 'Doegh', key_guid: admin2_key_guid, gr_id: admin2_gr_id)
+        ministry.add_admin(admin2.key_guid)
+
+        admin_roles = UserRole.where(ministry: ministry.gr_id).count
+        expect(admin_roles).to eq 2
+
+        get '/v1/user_roles',
+            { ministry: 'GUE' },
+            'HTTP_AUTHORIZATION' => "Bearer #{authenticate}"
+
+        expect(response).to be_success
+        expect(response).to have_http_status :ok
+        expect(json.count).to eq 2
+        expect(json.first['key_guid']).to eq admin_key_guid
+        expect(json.first['first_name']).to eq 'John'
+        expect(json.first['last_name']).to eq 'Doe'
+        expect(json.second['key_guid']).to eq admin2_key_guid
+        expect(json.second['first_name']).to eq 'Jane'
+        expect(json.second['last_name']).to eq 'Doegh'
+      end
+
+      it 'returns 400 for invalid ministry' do
+        create(:user_role, key_guid: user_key_guid, ministry: ministry_gr_id, role: UserRole.roles[:superadmin])
+        get '/v1/user_roles',
+            { ministry: 'DNE' },
+            'HTTP_AUTHORIZATION' => "Bearer #{authenticate}"
+
+        expect(response).not_to be_success
+        expect(response).to have_http_status :bad_request
+      end
+    end
+  end
 end
