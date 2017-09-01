@@ -10,14 +10,35 @@ module V1
     end
 
     def update
-      ministry = Ministry.find_by(min_code: params[:id])
-      render_not_found and return if ministry.nil?
-      ministry.activate_site
-      success_message = "Ministry site activated for #{ministry.name}"
-      render status: 200, json: { success: success_message }
+      render_error('Invalid Ministry Code') and return unless load_ministry
+      if activate_ministry
+        render_ministry
+      else
+        render_errors
+      end
     end
 
     private
+
+    def activate_ministry
+      @ministry.activate_site
+    end
+
+    def load_ministry
+      @ministry ||= Ministry.find_by(min_code: min_code)
+    end
+
+    def min_code
+      params[:id] || params[:min_code]
+    end
+
+    def render_ministry
+      render json: @ministry, status: :ok, serializer: V1::MinistrySerializer unless @ministry.blank?
+    end
+
+    def render_errors
+      render json: @ministry.errors.messages, status: :bad_request
+    end
 
     def filter_ministries
       @ministries = Ministry.all.includes(:area) # Prefetch areas

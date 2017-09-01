@@ -96,8 +96,7 @@ RSpec.describe 'V1::Ministries', type: :request do
     context 'with a session' do
       it 'responds with HTTP 401 for non-superadmin' do
         ministry = instance_double('Ministry', min_code: 'GUE')
-        allow(ministry).to receive(:activate_site) { nil }
-        allow(ministry).to receive(:name) { 'Test' }
+        allow(ministry).to receive(:activate_site) { true }
         allow(Ministry).to receive(:find_by) { ministry }
 
         put '/v1/ministries/GUE', nil, 'HTTP_AUTHORIZATION' => "Bearer #{authenticate}"
@@ -108,9 +107,8 @@ RSpec.describe 'V1::Ministries', type: :request do
 
       it 'activates a ministry for a superadmin' do
         create(:user_role, key_guid: user_key_guid, ministry: ministry_gr_id, role: UserRole.roles[:superadmin])
-        ministry = instance_double('Ministry', min_code: 'GUE')
-        allow(ministry).to receive(:activate_site) { nil }
-        allow(ministry).to receive(:name) { 'Test' }
+        ministry = create(:ministry, min_code: 'GUE')
+        allow(ministry).to receive(:activate_site) { true }
         allow(Ministry).to receive(:find_by) { ministry }
 
         put '/v1/ministries/GUE', nil, 'HTTP_AUTHORIZATION' => "Bearer #{authenticate}"
@@ -120,13 +118,13 @@ RSpec.describe 'V1::Ministries', type: :request do
         expect(ministry).to have_received(:activate_site)
       end
 
-      it 'returns 404 for invalid ministry for a superadmin' do
+      it 'returns 400 for invalid ministry for a superadmin' do
         create(:user_role, key_guid: user_key_guid, ministry: ministry_gr_id, role: UserRole.roles[:superadmin])
 
         put '/v1/ministries/DNE', nil, 'HTTP_AUTHORIZATION' => "Bearer #{authenticate}"
 
         expect(response).not_to be_success
-        expect(response).to have_http_status 404
+        expect(response).to have_http_status :bad_request
       end
     end
   end

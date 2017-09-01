@@ -42,6 +42,7 @@ class Ministry < ActiveRecord::Base
 
   def activate_site
     gr_ministry_client unless gp_key.present?
+    true
   end
 
   def add_admin(email_or_guid)
