@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 module V1
-  class CountriesController < AuthenticatedController
+  class CountriesController < BaseController
     def index
       refresh_countries if bool_value(params[:refresh])
       load_countries

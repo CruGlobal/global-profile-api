@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 module V1
-  class UsersController < AuthenticatedController
+  class UsersController < BaseController
     def show
       load_user
       render_user

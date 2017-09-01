@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 module V1
-  class PeopleController < AuthenticatedController
+  class PeopleController < BaseController
     power :profiles, as: :profile_scope, context: :ministry
 
     def index

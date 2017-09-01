@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 module V1
-  class MinistriesController < AuthenticatedController
+  class MinistriesController < BaseController
     power :superadmin, only: :update
 
     def index

@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 module V1
-  class UserRolesController < AuthenticatedController
+  class UserRolesController < BaseController
     power :superadmin
 
     def index
