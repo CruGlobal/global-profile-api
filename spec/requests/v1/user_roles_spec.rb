@@ -14,6 +14,17 @@ RSpec.describe 'V1::User_Roles', type: :request do
     allow(Person).to receive(:gr_id_for_key_guid).and_return user_key_guid
   end
 
+  describe 'GET /user_roles' do
+    context 'without a session' do
+      it 'responds with HTTP 401' do
+        get '/v1/user_roles'
+
+        expect(response).not_to be_success
+        expect(response).to have_http_status :unauthorized
+      end
+    end
+  end
+
   describe 'POST /user_roles' do
     context 'without a session' do
       it 'responds with HTTP 401' do
@@ -33,7 +44,7 @@ RSpec.describe 'V1::User_Roles', type: :request do
         allow(ministry).to receive(:add_admin) { role }
         allow(Ministry).to receive(:find_by) { ministry }
         post '/v1/user_roles',
-             { admin: 'John.Doe@cru.org', ministry: 'GUE' },
+             { admin_email: 'John.Doe@cru.org', ministry: 'GUE' },
              'HTTP_AUTHORIZATION' => "Bearer #{authenticate}"
 
         expect(response).not_to be_success
@@ -50,7 +61,7 @@ RSpec.describe 'V1::User_Roles', type: :request do
         expect(admin_roles).to eq 0
 
         post '/v1/user_roles',
-             { admin: admin_key_guid, ministry: 'GUE' },
+             { admin_guid: admin_key_guid, ministry: 'GUE' },
              'HTTP_AUTHORIZATION' => "Bearer #{authenticate}"
 
         admin_roles = UserRole.where(ministry: ministry.gr_id).count
@@ -62,7 +73,7 @@ RSpec.describe 'V1::User_Roles', type: :request do
       it 'returns 400 for invalid ministry' do
         create(:user_role, key_guid: user_key_guid, ministry: ministry_gr_id, role: UserRole.roles[:superadmin])
         post '/v1/user_roles/',
-             { admin: 'John.Doe@cru.org', ministry: 'DNE' },
+             { admin_email: 'John.Doe@cru.org', ministry: 'DNE' },
              'HTTP_AUTHORIZATION' => "Bearer #{authenticate}"
 
         expect(response).not_to be_success
@@ -74,7 +85,7 @@ RSpec.describe 'V1::User_Roles', type: :request do
   describe 'DELETE /user_roles' do
     context 'without a session' do
       it 'responds with HTTP 401' do
-        delete '/v1/user_roles'
+        delete '/v1/user_roles/test'
 
         expect(response).not_to be_success
         expect(response).to have_http_status :unauthorized
@@ -83,15 +94,9 @@ RSpec.describe 'V1::User_Roles', type: :request do
 
     context 'with a session' do
       it 'responds with HTTP 401 for non-superadmin' do
-        ministry = instance_double('Ministry', min_code: 'GUE')
-        role = instance_double('UserRole')
-        allow(role).to receive_message_chain(:person, :first_name).and_return('John')
-        allow(role).to receive_message_chain(:person, :last_name).and_return('Doe')
-        allow(ministry).to receive(:add_admin) { role }
-        allow(Ministry).to receive(:find_by) { ministry }
-        post '/v1/user_roles',
-             { admin: 'John.Doe@cru.org', ministry: 'GUE' },
-             'HTTP_AUTHORIZATION' => "Bearer #{authenticate}"
+        delete '/v1/user_roles/test',
+               { admin_email: 'John.Doe@cru.org', ministry: 'GUE' },
+               'HTTP_AUTHORIZATION' => "Bearer #{authenticate}"
 
         expect(response).not_to be_success
         expect(response).to have_http_status :unauthorized
@@ -105,8 +110,8 @@ RSpec.describe 'V1::User_Roles', type: :request do
         admin = create(:person, first_name: 'John', last_name: 'Doe', key_guid: admin_key_guid, gr_id: admin_gr_id)
         ministry.add_admin(admin.key_guid)
 
-        delete '/v1/user_roles',
-               { admin: admin.key_guid, ministry: 'GUE' },
+        delete "/v1/user_roles/#{admin.key_guid}",
+               { ministry: 'GUE' },
                'HTTP_AUTHORIZATION' => "Bearer #{authenticate}"
 
         admin_roles = UserRole.where(ministry: ministry.gr_id).count
@@ -117,8 +122,8 @@ RSpec.describe 'V1::User_Roles', type: :request do
 
       it 'returns 400 for invalid ministry' do
         create(:user_role, key_guid: user_key_guid, ministry: ministry_gr_id, role: UserRole.roles[:superadmin])
-        delete '/v1/user_roles/',
-               { admin: 'John.Doe@cru.org', ministry: 'DNE' },
+        delete "/v1/user_roles/#{SecureRandom.uuid}",
+               { ministry: 'DNE' },
                'HTTP_AUTHORIZATION' => "Bearer #{authenticate}"
 
         expect(response).not_to be_success
@@ -127,12 +132,14 @@ RSpec.describe 'V1::User_Roles', type: :request do
 
       it 'returns 404 for invalid admin' do
         create(:user_role, key_guid: user_key_guid, ministry: ministry_gr_id, role: UserRole.roles[:superadmin])
-        ministry = instance_double('Ministry', min_code: 'GUE')
-        allow(ministry).to receive(:remove_admin) { nil }
-        allow(Ministry).to receive(:find_by) { ministry }
+        ministry = create(:ministry, min_code: 'GUE', gr_id: SecureRandom.uuid)
+        admin_key_guid = SecureRandom.uuid
+        admin_gr_id = SecureRandom.uuid
+        admin = create(:person, first_name: 'John', last_name: 'Doe', key_guid: admin_key_guid, gr_id: admin_gr_id)
+        ministry.add_admin(admin.key_guid)
 
-        delete '/v1/user_roles/',
-               { admin: 'John.Doe@cru.org', ministry: 'DNE' },
+        delete "/v1/user_roles/#{SecureRandom.uuid}",
+               { ministry: 'GUE' },
                'HTTP_AUTHORIZATION' => "Bearer #{authenticate}"
 
         expect(response).not_to be_success
