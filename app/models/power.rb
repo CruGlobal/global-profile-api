@@ -12,10 +12,10 @@ class Power
     @superadmin = User.superadmin?(guid) unless guid.nil?
   end
 
-  power :profiles do |ministry|
+  power :profiles do |min|
     raise(Consul::Error, 'guid required') unless @guid.present?
-    raise(Consul::Error, 'ministry required') unless ministry.present?
-    @ministry ||= ministry
+    raise(Consul::Error, 'ministry required') unless min.present?
+    @ministry ||= min
     @role ||= UserRole.find_by(key_guid: @guid, ministry: ministry.gr_id)
     if admin?
       V1::UserUpdatedPerson.where(ministry: ministry)
