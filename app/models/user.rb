@@ -8,8 +8,4 @@ class User
     self.admin_roles = UserRole.where(key_guid: access_token.key_guid,
                                       role: UserRole.roles[:admin]).distinct.pluck(:ministry)
   end
-
-  def self.superadmin?(user_key_guid)
-    UserRole.exists?(key_guid: user_key_guid, role: UserRole.roles[:superadmin])
-  end
 end

@@ -9,14 +9,10 @@ module V1
     before_action :authenticate_request
 
     current_power do
-      request_power
+      Power.new(current_user&.key_guid)
     end
 
     protected
-
-    def request_power
-      Power.new(current_user&.key_guid)
-    end
 
     def render_consul_powerless(exception)
       render_error(exception.message, status: :unauthorized)

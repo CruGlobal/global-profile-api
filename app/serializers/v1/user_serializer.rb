@@ -26,7 +26,7 @@ module V1
     end
 
     def superadmin
-      User.superadmin?(object.access_token&.key_guid)
+      UserRole.superadmin?(object.access_token&.key_guid)
     end
   end
 end

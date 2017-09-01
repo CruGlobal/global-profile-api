@@ -9,7 +9,7 @@ class Power
     @ministry = nil
     @role = nil
     @person_id = Person.gr_id_for_key_guid(guid) unless guid.nil?
-    @superadmin = User.superadmin?(guid) unless guid.nil?
+    @superadmin = UserRole.superadmin?(guid) unless guid.nil?
   end
 
   power :profiles do |min|
