@@ -24,6 +24,10 @@ class Power
     end
   end
 
+  power :superadmin do
+    superadmin?
+  end
+
   def admin?
     superadmin? || role.try(:admin?)
   end

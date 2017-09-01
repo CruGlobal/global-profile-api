@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 module V1
   class MinistriesController < AuthenticatedController
+    power :superadmin, only: :update
+
     def index
       refresh_ministries if bool_value(params[:refresh])
       filter_ministries

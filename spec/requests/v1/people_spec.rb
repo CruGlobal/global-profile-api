@@ -8,7 +8,7 @@ RSpec.describe 'V1::People', type: :request do
   let(:ministry_gr_id) { SecureRandom.uuid }
   let(:authenticate) { authenticate_guid(user_key_guid) }
   let(:ministry) { create(:ministry, gr_id: ministry_gr_id) }
-  let!(:person) { create(:person, key_guid: user_key_guid, gr_id: user_gr_id, ministry: ministry) }
+  let!(:user) { create(:person, key_guid: user_key_guid, gr_id: user_gr_id, ministry: ministry) }
 
   before :each do
     allow(Person).to receive(:gr_id_for_key_guid).and_return user_gr_id
@@ -167,7 +167,6 @@ RSpec.describe 'V1::People', type: :request do
             nil,
             'HTTP_AUTHORIZATION' => "Bearer #{authenticate}"
 
-        Rails.logger.error("\e[91m #{json} \033[0m")
         expect(response).to be_success
         expect(json['person_id']).to eq new_person.gr_id
       end

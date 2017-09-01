@@ -3,9 +3,15 @@ require 'rails_helper'
 
 RSpec.describe 'V1::Ministries', type: :request do
   let(:json) { JSON.parse(response.body) }
+  let(:user_key_guid) { SecureRandom.uuid }
+  let(:user_gr_id) { SecureRandom.uuid }
+  let(:ministry_gr_id) { SecureRandom.uuid }
+  let(:authenticate) { authenticate_guid(user_key_guid) }
+  let(:ministry) { create(:ministry, gr_id: ministry_gr_id) }
+  let(:user) { create(:person, key_guid: user_key_guid, gr_id: user_gr_id, ministry: ministry) }
 
   before :each do
-    allow(Person).to receive(:gr_id_for_key_guid).and_return SecureRandom.uuid
+    allow(Person).to receive(:gr_id_for_key_guid).and_return user_key_guid
   end
 
   describe 'GET /ministries' do
@@ -24,7 +30,7 @@ RSpec.describe 'V1::Ministries', type: :request do
         create(:ministry, gp_key: SecureRandom.uuid)
         create(:ministry, active: false)
 
-        get '/v1/ministries', nil, 'HTTP_AUTHORIZATION' => "Bearer #{authenticate_guid}"
+        get '/v1/ministries', nil, 'HTTP_AUTHORIZATION' => "Bearer #{authenticate}"
 
         expect(response).to be_success
         expect(response).to have_http_status :ok
@@ -37,7 +43,7 @@ RSpec.describe 'V1::Ministries', type: :request do
           create(:ministry, gp_key: SecureRandom.uuid)
           create(:ministry, active: false)
 
-          get '/v1/ministries?show_inactive=true', nil, 'HTTP_AUTHORIZATION' => "Bearer #{authenticate_guid}"
+          get '/v1/ministries?show_inactive=true', nil, 'HTTP_AUTHORIZATION' => "Bearer #{authenticate}"
 
           expect(response).to be_success
           expect(response).to have_http_status :ok
@@ -51,7 +57,7 @@ RSpec.describe 'V1::Ministries', type: :request do
           create(:ministry, gp_key: SecureRandom.uuid)
           create(:ministry, active: false)
 
-          get '/v1/ministries?global_profile_only=true', nil, 'HTTP_AUTHORIZATION' => "Bearer #{authenticate_guid}"
+          get '/v1/ministries?global_profile_only=true', nil, 'HTTP_AUTHORIZATION' => "Bearer #{authenticate}"
 
           expect(response).to be_success
           expect(response).to have_http_status :ok
@@ -66,7 +72,7 @@ RSpec.describe 'V1::Ministries', type: :request do
           create(:ministry, active: false)
           allow(Ministry).to receive(:refresh_from_gr) { Ministry.all }
 
-          get '/v1/ministries?refresh=true', nil, 'HTTP_AUTHORIZATION' => "Bearer #{authenticate_guid}"
+          get '/v1/ministries?refresh=true', nil, 'HTTP_AUTHORIZATION' => "Bearer #{authenticate}"
 
           expect(Ministry).to have_received(:refresh_from_gr)
           expect(response).to be_success
@@ -88,21 +94,36 @@ RSpec.describe 'V1::Ministries', type: :request do
     end
 
     context 'with a session' do
-      it 'activates a ministry' do
+      it 'responds with HTTP 401 for non-superadmin' do
         ministry = instance_double('Ministry', min_code: 'GUE')
         allow(ministry).to receive(:activate_site) { nil }
         allow(ministry).to receive(:name) { 'Test' }
         allow(Ministry).to receive(:find_by) { ministry }
 
-        put '/v1/ministries/GUE', nil, 'HTTP_AUTHORIZATION' => "Bearer #{authenticate_guid}"
+        put '/v1/ministries/GUE', nil, 'HTTP_AUTHORIZATION' => "Bearer #{authenticate}"
+
+        expect(response).to_not be_success
+        expect(response).to have_http_status :unauthorized
+      end
+
+      it 'activates a ministry for a superadmin' do
+        create(:user_role, key_guid: user_key_guid, ministry: ministry_gr_id, role: UserRole.roles[:superadmin])
+        ministry = instance_double('Ministry', min_code: 'GUE')
+        allow(ministry).to receive(:activate_site) { nil }
+        allow(ministry).to receive(:name) { 'Test' }
+        allow(Ministry).to receive(:find_by) { ministry }
+
+        put '/v1/ministries/GUE', nil, 'HTTP_AUTHORIZATION' => "Bearer #{authenticate}"
 
         expect(response).to be_success
         expect(response).to have_http_status :ok
         expect(ministry).to have_received(:activate_site)
       end
 
-      it 'returns 404 for invalid ministry' do
-        put '/v1/ministries/DNE', nil, 'HTTP_AUTHORIZATION' => "Bearer #{authenticate_guid}"
+      it 'returns 404 for invalid ministry for a superadmin' do
+        create(:user_role, key_guid: user_key_guid, ministry: ministry_gr_id, role: UserRole.roles[:superadmin])
+
+        put '/v1/ministries/DNE', nil, 'HTTP_AUTHORIZATION' => "Bearer #{authenticate}"
 
         expect(response).not_to be_success
         expect(response).to have_http_status 404

@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 module V1
   class UserRolesController < AuthenticatedController
+    power :superadmin
+
     def create
       @ministry = Ministry.find_by(min_code: params[:ministry])
       render_not_found and return if @ministry.nil?
