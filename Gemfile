@@ -1,5 +1,6 @@
 source 'https://rubygems.org'
 
+gem 'rails', '~> 4.2.10'
 gem 'rails-api'
 gem 'active_model_serializers', git: 'https://github.com/rails-api/active_model_serializers.git'
 gem 'puma'
