@@ -73,8 +73,11 @@ GEM
     cru-auth-lib (0.1.0)
       active_model_serializers (>= 0.10.0.rc1)
       redis (~> 3.3)
+    ddtrace (0.15.0)
+      msgpack
     diff-lcs (1.2.5)
     docile (1.1.5)
+    dogstatsd-ruby (4.0.0)
     domain_name (0.5.20180417)
       unf (>= 0.0.5, < 1.0.0)
     dotenv (2.1.1)
@@ -146,6 +149,7 @@ GEM
     mini_portile2 (2.3.0)
     minitest (5.11.3)
     mock_redis (0.16.1)
+    msgpack (1.2.4)
     multi_json (1.13.1)
     nenv (0.3.0)
     netrc (0.11.0)
@@ -318,6 +322,8 @@ DEPENDENCIES
   consul
   coveralls
   cru-auth-lib (~> 0.1.0)
+  ddtrace
+  dogstatsd-ruby
   dotenv-rails
   factory_girl_rails
   fakeredis

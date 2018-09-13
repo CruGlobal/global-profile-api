@@ -21,6 +21,8 @@ gem 'arel'
 gem 'consul'
 gem 'assignable_values'
 gem 'global_registry'
+gem 'ddtrace'
+gem 'dogstatsd-ruby'
 
 group :development, :test do
   gem 'dotenv-rails'
