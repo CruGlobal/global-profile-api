@@ -28,3 +28,6 @@ vendor/bundle
 
 # Environment
 .env.*
+
+# Mac OS
+.DS_Store
