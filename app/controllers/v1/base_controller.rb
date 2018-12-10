@@ -22,7 +22,7 @@ module V1
     end
 
     def bool_value(value)
-      ActiveRecord::Type::Boolean.new.type_cast_from_user(value)
+      ActiveRecord::Type::Boolean.new.cast(value)
     end
   end
 end

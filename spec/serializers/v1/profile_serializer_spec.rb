@@ -3,13 +3,6 @@ require 'rails_helper'
 
 RSpec.describe V1::ProfileSerializer do
   describe 'a person' do
-    before(:all) do
-      Person.skip_callback(:save, :after, :push_to_gr)
-    end
-    after(:all) do
-      Person.set_callback(:save, :after, :push_to_gr)
-    end
-
     let(:ministry) { create(:ministry) }
     let(:assignment) { create(:assignment, ministry: ministry) }
     let(:employment) do

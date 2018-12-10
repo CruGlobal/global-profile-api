@@ -1,5 +1,5 @@
 # frozen_string_literal: true
-class Assignment < ActiveRecord::Base
+class Assignment < ApplicationRecord
   enum mcc: { 'Jesus Film' => 0, 'Prayer' => 1, 'Other' => 2, 'Student-Led Movements' => 3, 'Leader-Led Movements' => 4,
               'Global Church Movements' => 5, 'Capacity Accelerators' => 6, 'Operations' => 7, 'Area Team Leaders' => 8,
               'Fund Development' => 9, 'LDHR' => 10, 'Unknown' => 11, 'Digital Strategies' => 12 }

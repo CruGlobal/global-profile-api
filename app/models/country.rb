@@ -1,5 +1,5 @@
 # frozen_string_literal: true
-class Country < ActiveRecord::Base
+class Country < ApplicationRecord
   DEFAULT_GR_PARAMS = { entity_type: 'iso_country', levels: 0, fields: 'name,iso3_code' }.freeze
 
   class << self

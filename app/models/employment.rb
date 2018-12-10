@@ -1,5 +1,5 @@
 # frozen_string_literal: true
-class Employment < ActiveRecord::Base
+class Employment < ApplicationRecord
   # Both organizational status status and funding source have value 'Other', this is not allowed by active record
   # We will suffix each by type, but the serializer, controller and model need to know to change values to match
 

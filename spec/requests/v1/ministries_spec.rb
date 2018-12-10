@@ -19,7 +19,7 @@ RSpec.describe 'V1::Ministries', type: :request do
         create(:ministry, gp_key: SecureRandom.uuid)
         create(:ministry, active: false)
 
-        get '/v1/ministries', nil, 'HTTP_AUTHORIZATION' => "Bearer #{authenticate_guid}"
+        get '/v1/ministries', headers: { 'HTTP_AUTHORIZATION' => "Bearer #{authenticate_guid}" }
 
         expect(response).to be_success
         expect(response).to have_http_status :ok
@@ -32,7 +32,7 @@ RSpec.describe 'V1::Ministries', type: :request do
           create(:ministry, gp_key: SecureRandom.uuid)
           create(:ministry, active: false)
 
-          get '/v1/ministries?show_inactive=true', nil, 'HTTP_AUTHORIZATION' => "Bearer #{authenticate_guid}"
+          get '/v1/ministries?show_inactive=true', headers: { 'HTTP_AUTHORIZATION' => "Bearer #{authenticate_guid}" }
 
           expect(response).to be_success
           expect(response).to have_http_status :ok
@@ -46,7 +46,7 @@ RSpec.describe 'V1::Ministries', type: :request do
           create(:ministry, gp_key: SecureRandom.uuid)
           create(:ministry, active: false)
 
-          get '/v1/ministries?global_profile_only=true', nil, 'HTTP_AUTHORIZATION' => "Bearer #{authenticate_guid}"
+          get '/v1/ministries?global_profile_only=true', headers: { 'HTTP_AUTHORIZATION' => "Bearer #{authenticate_guid}" }
 
           expect(response).to be_success
           expect(response).to have_http_status :ok
@@ -61,7 +61,7 @@ RSpec.describe 'V1::Ministries', type: :request do
           create(:ministry, active: false)
           allow(Ministry).to receive(:refresh_from_gr) { Ministry.all }
 
-          get '/v1/ministries?refresh=true', nil, 'HTTP_AUTHORIZATION' => "Bearer #{authenticate_guid}"
+          get '/v1/ministries?refresh=true', headers: { 'HTTP_AUTHORIZATION' => "Bearer #{authenticate_guid}" }
 
           expect(Ministry).to have_received(:refresh_from_gr)
           expect(response).to be_success

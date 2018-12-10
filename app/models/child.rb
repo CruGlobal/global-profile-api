@@ -1,5 +1,5 @@
 # frozen_string_literal: true
-class Child < ActiveRecord::Base
+class Child < ApplicationRecord
   PERMITTED_ATTRIBUTES = [:first_name, :last_name, :birth_date, :id].freeze
 
   belongs_to :parent, class_name: 'Person', foreign_key: 'person_id', inverse_of: :children

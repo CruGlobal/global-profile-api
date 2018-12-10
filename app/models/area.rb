@@ -1,5 +1,5 @@
 # frozen_string_literal: true
-class Area < ActiveRecord::Base
+class Area < ApplicationRecord
   class << self
     def for_code(area_code)
       return nil unless area_code.present?

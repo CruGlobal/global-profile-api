@@ -19,7 +19,7 @@ RSpec.describe 'V1::Countries', type: :request do
         create(:country, iso_code: 'XYZ', name: 'Xylophonia')
         create(:country, iso_code: 'PDQ', name: 'Please and Thankyou')
 
-        get '/v1/countries', nil, 'HTTP_AUTHORIZATION' => "Bearer #{authenticate_guid}"
+        get '/v1/countries', headers: { 'HTTP_AUTHORIZATION' => "Bearer #{authenticate_guid}" }
 
         expect(response).to be_success
         expect(response).to have_http_status :ok
