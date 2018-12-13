@@ -1,15 +1,7 @@
 # frozen_string_literal: true
 module V1
   class PeopleController < BaseController
-    include Consul::Controller
-    before_action :authenticate_request
-
-    # Current Power must be defined before powers
-    current_power do
-      Power.new(current_user.key_guid, ministry)
-    end
-
-    power :profiles, as: :profile_scope
+    power :profiles, as: :profile_scope, context: :ministry
 
     def index
       if Power.current.admin?

@@ -40,6 +40,55 @@ class Ministry < ActiveRecord::Base
     end
   end
 
+  def activate_site
+    gr_ministry_client unless gp_key.present?
+    true
+  end
+
+  def add_admin(email_or_guid)
+    if email?(email_or_guid)
+      add_admin_by_email(email_or_guid)
+    else
+      add_admin_by_key_guid(email_or_guid)
+    end
+  end
+
+  def add_admin_by_email(email)
+    guid = TheKey::UserAttributes.new(email: email).cas_attributes['theKeyGuid']
+    add_admin_by_key_guid(guid)
+  end
+
+  def add_admin_by_key_guid(guid)
+    return if UserRole.exists?(key_guid: guid.downcase, ministry: gr_id)
+    admin_role = UserRole.roles[:admin]
+    UserRole.create(key_guid: guid.downcase, ministry: gr_id, role: admin_role)
+  end
+
+  def remove_admin(email_or_guid)
+    if email?(email_or_guid)
+      remove_admin_by_email(email_or_guid)
+    else
+      remove_admin_by_key_guid(email_or_guid)
+    end
+  end
+
+  def remove_admin_by_email(email)
+    guid = TheKey::UserAttributes.new(email: email).cas_attributes['theKeyGuid']
+    remove_admin_by_key_guid(guid)
+  end
+
+  def remove_admin_by_key_guid(guid)
+    role = UserRole.find_by(key_guid: guid.downcase, ministry: gr_id, role: UserRole.roles[:admin])
+    return if role.nil?
+    role.destroy
+  end
+
+  private
+
+  def email?(email)
+    email =~ /@/
+  end
+
   class << self
     def refresh_from_gr
       all_min_codes = []

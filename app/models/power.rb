@@ -2,18 +2,21 @@
 class Power
   include Consul::Power
 
-  attr_reader :guid, :ministry, :person_id, :role
+  attr_reader :guid, :ministry, :person_id, :role, :superadmin
 
-  def initialize(guid, ministry)
-    raise(Consul::Error, 'GUID required') unless guid.present?
-    raise(Consul::Error, 'ministry required') unless ministry.present?
+  def initialize(guid)
     @guid = guid
-    @person_id = Person.gr_id_for_key_guid(guid)
-    @ministry = ministry
-    @role = UserRole.find_by(key_guid: guid, ministry: ministry.gr_id)
+    @ministry = nil
+    @role = nil
+    @person_id = Person.gr_id_for_key_guid(guid) unless guid.nil?
+    @superadmin = UserRole.superadmin?(guid) unless guid.nil?
   end
 
-  power :profiles do
+  power :profiles do |min|
+    raise(Consul::Error, 'guid required') unless @guid.present?
+    raise(Consul::Error, 'ministry required') unless min.present?
+    @ministry ||= min
+    @role ||= UserRole.find_by(key_guid: @guid, ministry: ministry.gr_id)
     if admin?
       V1::UserUpdatedPerson.where(ministry: ministry)
     else
@@ -21,7 +24,15 @@ class Power
     end
   end
 
+  power :superadmin do
+    superadmin?
+  end
+
   def admin?
-    role.try(:admin?)
+    superadmin? || role.try(:admin?)
+  end
+
+  def superadmin?
+    @superadmin
   end
 end

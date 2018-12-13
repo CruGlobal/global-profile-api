@@ -1,8 +1,6 @@
 # frozen_string_literal: true
 module V1
   class UsersController < BaseController
-    before_action :authenticate_request
-
     def show
       load_user
       render_user

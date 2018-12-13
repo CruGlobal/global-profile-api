@@ -96,4 +96,155 @@ RSpec.describe Ministry, type: :model do
       expect(result.size).to eq 3
     end
   end
+
+  context '.add_admin_by_key_guid' do
+    it 'adds an admin by key_guid' do
+      gr_id = SecureRandom.uuid
+      key_guid = SecureRandom.uuid
+      ministry = create(:ministry, min_code: 'GUE', gr_id: gr_id)
+      expect(ministry.user_roles.count).to eq 0
+      ministry.add_admin_by_key_guid(key_guid)
+      expect(ministry.user_roles.count).to eq 1
+      role = ministry.user_roles.first
+      expect(role.key_guid).to eq key_guid
+      expect(role.ministry).to eq gr_id
+    end
+
+    it 'does not add duplicate admin' do
+      gr_id = SecureRandom.uuid
+      key_guid = SecureRandom.uuid
+      ministry = create(:ministry, min_code: 'GUE', gr_id: gr_id)
+      expect(ministry.user_roles.count).to eq 0
+      ministry.add_admin_by_key_guid(key_guid)
+      ministry.add_admin_by_key_guid(key_guid)
+      expect(ministry.user_roles.count).to eq 1
+    end
+  end
+
+  context '.add_admin_by_email' do
+    it 'adds an admin by email' do
+      gr_id = SecureRandom.uuid
+      key_guid = SecureRandom.uuid
+      ministry = create(:ministry, min_code: 'GUE', gr_id: gr_id)
+      expect(ministry.user_roles.count).to eq 0
+
+      user_attributes = instance_double('TheKey::UserAttributes')
+      allow(user_attributes).to receive(:cas_attributes) { { 'theKeyGuid' => key_guid } }
+      allow(TheKey::UserAttributes).to receive(:new) { user_attributes }
+
+      ministry.add_admin_by_email('john.doe@cru.org')
+
+      expect(ministry.user_roles.count).to eq 1
+      role = ministry.user_roles.first
+      expect(role.key_guid).to eq key_guid
+      expect(role.ministry).to eq gr_id
+      expect(role.role).to eq 'admin'
+    end
+
+    it 'does not add duplicate admin' do
+      gr_id = SecureRandom.uuid
+      key_guid = SecureRandom.uuid
+      ministry = create(:ministry, min_code: 'GUE', gr_id: gr_id)
+      expect(ministry.user_roles.count).to eq 0
+
+      user_attributes = instance_double('TheKey::UserAttributes')
+      allow(user_attributes).to receive(:cas_attributes) { { 'theKeyGuid' => key_guid } }
+      allow(TheKey::UserAttributes).to receive(:new) { user_attributes }
+
+      ministry.add_admin_by_email('john.doe@cru.org')
+
+      expect(ministry.user_roles.count).to eq 1
+      role = ministry.user_roles.first
+      expect(role.key_guid).to eq key_guid
+      expect(role.ministry).to eq gr_id
+      expect(role.role).to eq 'admin'
+    end
+  end
+
+  context '.add_admin' do
+    it 'adds an admin by email' do
+      gr_id = SecureRandom.uuid
+      key_guid = SecureRandom.uuid
+      ministry = create(:ministry, min_code: 'GUE', gr_id: gr_id)
+      expect(ministry.user_roles.count).to eq 0
+
+      user_attributes = instance_double('TheKey::UserAttributes')
+      allow(user_attributes).to receive(:cas_attributes) { { 'theKeyGuid' => key_guid } }
+      allow(TheKey::UserAttributes).to receive(:new) { user_attributes }
+
+      ministry.add_admin('john.doe@cru.org')
+
+      expect(ministry.user_roles.count).to eq 1
+      role = ministry.user_roles.first
+      expect(role.key_guid).to eq key_guid
+      expect(role.ministry).to eq gr_id
+      expect(role.role).to eq 'admin'
+    end
+
+    it 'adds an admin by uuid' do
+      gr_id = SecureRandom.uuid
+      key_guid = SecureRandom.uuid
+      ministry = create(:ministry, min_code: 'GUE', gr_id: gr_id)
+      expect(ministry.user_roles.count).to eq 0
+
+      ministry.add_admin(key_guid)
+
+      expect(ministry.user_roles.count).to eq 1
+      role = ministry.user_roles.first
+      expect(role.key_guid).to eq key_guid
+      expect(role.ministry).to eq gr_id
+      expect(role.role).to eq 'admin'
+    end
+  end
+
+  context '.remove_admin' do
+    it 'removes an admin by email' do
+      gr_id = SecureRandom.uuid
+      key_guid = SecureRandom.uuid
+      ministry = create(:ministry, min_code: 'GUE', gr_id: gr_id)
+      role = create(:user_role, key_guid: key_guid, ministry: gr_id, role: UserRole.roles[:admin])
+      expect(ministry.user_roles.count).to eq 1
+
+      user_attributes = instance_double('TheKey::UserAttributes')
+      allow(user_attributes).to receive(:cas_attributes) { { 'theKeyGuid' => key_guid } }
+      allow(TheKey::UserAttributes).to receive(:new) { user_attributes }
+
+      ministry.remove_admin('john.doe@cru.org')
+
+      expect(role.key_guid).to eq key_guid
+      expect(ministry.user_roles.count).to eq 0
+    end
+
+    it 'removes an admin by uuid' do
+      gr_id = SecureRandom.uuid
+      key_guid = SecureRandom.uuid
+      ministry = create(:ministry, min_code: 'GUE', gr_id: gr_id)
+      create(:user_role, key_guid: key_guid, ministry: gr_id, role: UserRole.roles[:admin])
+      expect(ministry.user_roles.count).to eq 1
+
+      role = ministry.remove_admin(key_guid)
+
+      expect(role.key_guid).to eq key_guid
+      expect(ministry.user_roles.count).to eq 0
+    end
+  end
+
+  context '.activate_site' do
+    it 'sets GP key' do
+      gr_id = SecureRandom.uuid
+      ministry = create(:ministry, min_code: 'GUE', gr_id: gr_id)
+      expect(ministry.gp_key).to be_nil
+
+      fake_system_client = instance_double('GlobalRegistry::System')
+      allow(fake_system_client).to receive_message_chain(:find, :dig).and_return('abc')
+      fake_gr_client = double('GlobalRegistryClient')
+      allow(fake_gr_client).to receive(:systems) { fake_system_client }
+      allow(GlobalRegistryClient).to receive(:new) { fake_gr_client }
+
+      ministry.activate_site
+
+      expect(ministry.gp_key).not_to be_nil
+      expect(ministry.gp_key).to eq 'abc'
+    end
+  end
 end

@@ -2,8 +2,21 @@
 module V1
   class BaseController < ApplicationController
     include CruAuthLib::AccessTokenProtectedConcern
+    include Consul::Controller
+
+    rescue_from Consul::Powerless, with: :render_consul_powerless
+
+    before_action :authenticate_request
+
+    current_power do
+      Power.new(current_user&.key_guid)
+    end
 
     protected
+
+    def render_consul_powerless(exception)
+      render_error(exception.message, status: :unauthorized)
+    end
 
     def current_user
       @access_token

@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 module V1
   class MinistriesController < BaseController
-    before_action :authenticate_request
+    power :superadmin, only: :update
 
     def index
       refresh_ministries if bool_value(params[:refresh])
@@ -9,7 +9,36 @@ module V1
       render_ministries
     end
 
+    def update
+      render_error('Invalid Ministry Code') and return unless load_ministry
+      if activate_ministry
+        render_ministry
+      else
+        render_errors
+      end
+    end
+
     private
+
+    def activate_ministry
+      @ministry.activate_site
+    end
+
+    def load_ministry
+      @ministry ||= Ministry.find_by(min_code: min_code)
+    end
+
+    def min_code
+      params[:id] || params[:min_code]
+    end
+
+    def render_ministry
+      render json: @ministry, status: :ok, serializer: V1::MinistrySerializer unless @ministry.blank?
+    end
+
+    def render_errors
+      render json: @ministry.errors.messages, status: :bad_request
+    end
 
     def filter_ministries
       @ministries = Ministry.all.includes(:area) # Prefetch areas
