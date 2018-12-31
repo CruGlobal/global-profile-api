@@ -18,7 +18,7 @@ RSpec.describe 'V1::Languages', type: :request do
 
     context 'with a session' do
       it 'responds with all languages' do
-        get '/v1/languages', nil, 'HTTP_AUTHORIZATION' => "Bearer #{authenticate_guid}"
+        get '/v1/languages', headers: { 'HTTP_AUTHORIZATION' => "Bearer #{authenticate_guid}" }
 
         expect(response).to be_success
         expect(response).to have_http_status :ok

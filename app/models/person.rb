@@ -1,5 +1,5 @@
 # frozen_string_literal: true
-class Person < ActiveRecord::Base # rubocop:disable Metrics/ClassLength
+class Person < ApplicationRecord # rubocop:disable Metrics/ClassLength
   GR_FIELDS_PARAM = %w(first_name last_name preferred_name gender birth_date marital_status marriage_date language
                        is_secure authentication.key_guid email_address.* address.* phone_number.* children.*
                        ministry:relationship wife:relationship husband:relationship).freeze

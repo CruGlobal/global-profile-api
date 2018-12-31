@@ -1,5 +1,5 @@
 # frozen_string_literal: true
-require File.expand_path('../boot', __FILE__)
+require_relative 'boot'
 
 require 'active_model/railtie'
 require 'active_record/railtie'
@@ -11,7 +11,10 @@ Bundler.require(*Rails.groups)
 
 module GlobalProfileApi
   class Application < Rails::Application
-    config.assets.enabled = false
+    # Settings in config/environments/* take precedence over those specified here.
+    # Application configuration should go into files in config/initializers
+    # -- all .rb files in that directory are automatically loaded.
+
     config.generators do |g|
       g.test_framework :rspec, fixture: true
       g.view_specs false
@@ -22,7 +25,7 @@ module GlobalProfileApi
       g.fixture_replacement :factory_girl, dir: 'spec/factories'
     end
 
-    config.middleware.insert_before 0, 'Rack::Cors' do
+    config.middleware.insert_before 0, Rack::Cors do
       allow do
         origins '*'
         resource '*',

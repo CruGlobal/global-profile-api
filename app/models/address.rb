@@ -1,5 +1,5 @@
 # frozen_string_literal: true
-class Address < ActiveRecord::Base
+class Address < ApplicationRecord
   PERMITTED_ATTRIBUTES = [:line1, :line2, :city, :state, :postal_code, :country].freeze
 
   def as_gr_entity

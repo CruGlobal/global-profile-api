@@ -1,5 +1,5 @@
 # frozen_string_literal: true
-class Ministry < ActiveRecord::Base
+class Ministry < ApplicationRecord
   DEFAULT_GR_PARAMS = { entity_type: 'ministry', ruleset: 'global_ministries', levels: 0,
                         fields: 'name,min_code,area:relationship,is_active' }.freeze
   GP_SYSTEM_PREFIX = ENV.fetch('GLOBAL_REGISTRY_ACCESS_TOKEN_PREFIX')
