@@ -4,7 +4,7 @@ class Ministry < ApplicationRecord
                         fields: 'name,min_code,area:relationship,is_active' }.freeze
   GP_SYSTEM_PREFIX = ENV.fetch('GLOBAL_REGISTRY_ACCESS_TOKEN_PREFIX')
 
-  belongs_to :area
+  belongs_to :area, optional: true
   has_many :people
   has_many :user_roles, foreign_key: :ministry, class_name: 'UserRole', primary_key: :gr_id, inverse_of: :gr_ministry
 

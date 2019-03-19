@@ -9,7 +9,7 @@ class Assignment < ApplicationRecord
 
   PERMITTED_ATTRIBUTES = [:assignment_id, :ministry_id, :mcc, :position_role, :scope].freeze
 
-  belongs_to :person
+  belongs_to :person, optional: true
   belongs_to :ministry
 
   after_destroy :destroy_gr_relationship, if: 'gr_id.present?'
