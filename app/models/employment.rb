@@ -13,7 +13,7 @@ class Employment < ApplicationRecord
   PERMITTED_ATTRIBUTES = [:organizational_status, :funding_source, :date_joined_staff, :date_left_staff,
                           :ministry_of_employment, :staff_account].freeze
 
-  belongs_to :person
+  belongs_to :person, optional: true
   belongs_to :ministry
 
   before_save :update_volunteer_ministry
