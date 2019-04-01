@@ -12,7 +12,7 @@ class Assignment < ApplicationRecord
   belongs_to :person, optional: true
   belongs_to :ministry
 
-  after_destroy :destroy_gr_relationship, if: 'gr_id.present?'
+  after_destroy :destroy_gr_relationship, if: -> { gr_id.present? }
 
   def as_gr_relationship
     { ministry: ministry.try(:gr_id), mcc: mcc, position_role: position_role, scope: scope,
