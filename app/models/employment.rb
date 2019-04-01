@@ -17,7 +17,7 @@ class Employment < ApplicationRecord
   belongs_to :ministry
 
   before_save :update_volunteer_ministry
-  after_destroy :destroy_gr_relationship, if: 'gr_id.present?'
+  after_destroy :destroy_gr_relationship, if: -> { gr_id.present? }
 
   def organizational_status
     value = super

@@ -4,7 +4,7 @@ class Child < ApplicationRecord
 
   belongs_to :parent, class_name: 'Person', foreign_key: 'person_id', inverse_of: :children
 
-  after_destroy :destroy_gr_entity, if: 'gr_id.present?'
+  after_destroy :destroy_gr_entity, if: -> { gr_id.present? }
 
   def as_gr_entity
     { first_name: first_name, last_name: last_name, birth_date: birth_date.try(:strftime, '%Y-%m-%d'),

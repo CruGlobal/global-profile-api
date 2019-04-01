@@ -8,7 +8,7 @@ RSpec.describe 'V1::Ministries', type: :request do
       it 'responds with HTTP 401' do
         get '/v1/ministries'
 
-        expect(response).not_to be_success
+        expect(response).not_to be_successful
         expect(response).to have_http_status :unauthorized
       end
     end
@@ -21,7 +21,7 @@ RSpec.describe 'V1::Ministries', type: :request do
 
         get '/v1/ministries', headers: { 'HTTP_AUTHORIZATION' => "Bearer #{authenticate_guid}" }
 
-        expect(response).to be_success
+        expect(response).to be_successful
         expect(response).to have_http_status :ok
         expect(json.size).to eq 2
       end
@@ -34,7 +34,7 @@ RSpec.describe 'V1::Ministries', type: :request do
 
           get '/v1/ministries?show_inactive=true', headers: { 'HTTP_AUTHORIZATION' => "Bearer #{authenticate_guid}" }
 
-          expect(response).to be_success
+          expect(response).to be_successful
           expect(response).to have_http_status :ok
           expect(json.size).to eq 3
         end
@@ -48,7 +48,7 @@ RSpec.describe 'V1::Ministries', type: :request do
 
           get '/v1/ministries?global_profile_only=true', headers: { 'HTTP_AUTHORIZATION' => "Bearer #{authenticate_guid}" }
 
-          expect(response).to be_success
+          expect(response).to be_successful
           expect(response).to have_http_status :ok
           expect(json.size).to eq 1
         end
@@ -64,7 +64,7 @@ RSpec.describe 'V1::Ministries', type: :request do
           get '/v1/ministries?refresh=true', headers: { 'HTTP_AUTHORIZATION' => "Bearer #{authenticate_guid}" }
 
           expect(Ministry).to have_received(:refresh_from_gr)
-          expect(response).to be_success
+          expect(response).to be_successful
           expect(response).to have_http_status :ok
           expect(json.size).to eq 2
         end
