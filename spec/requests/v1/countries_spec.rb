@@ -8,7 +8,7 @@ RSpec.describe 'V1::Countries', type: :request do
       it 'responds with HTTP 401' do
         get '/v1/countries'
 
-        expect(response).not_to be_success
+        expect(response).not_to be_successful
         expect(response).to have_http_status :unauthorized
       end
     end
@@ -21,7 +21,7 @@ RSpec.describe 'V1::Countries', type: :request do
 
         get '/v1/countries', headers: { 'HTTP_AUTHORIZATION' => "Bearer #{authenticate_guid}" }
 
-        expect(response).to be_success
+        expect(response).to be_successful
         expect(response).to have_http_status :ok
         expect(json.size).to eq 3
       end

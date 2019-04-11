@@ -9,7 +9,7 @@ RSpec.describe 'V1::Languages', type: :request do
       it 'responds with all languages' do
         get '/v1/languages'
 
-        expect(response).to be_success
+        expect(response).to be_successful
         expect(response).to have_http_status :ok
         expect(json.size).to eq 535
         expect(json.sample.keys).to contain_exactly('iso_code', 'native_name', 'is_rtl', 'english_name')
@@ -20,7 +20,7 @@ RSpec.describe 'V1::Languages', type: :request do
       it 'responds with all languages' do
         get '/v1/languages', headers: { 'HTTP_AUTHORIZATION' => "Bearer #{authenticate_guid}" }
 
-        expect(response).to be_success
+        expect(response).to be_successful
         expect(response).to have_http_status :ok
         expect(json.size).to eq 535
         expect(json.sample.keys).to contain_exactly('iso_code', 'native_name', 'is_rtl', 'english_name')

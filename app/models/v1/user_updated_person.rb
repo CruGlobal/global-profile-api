@@ -8,8 +8,8 @@ module V1
     accepts_nested_attributes_for :address
     accepts_nested_attributes_for :children
 
-    before_save :set_guid_from_username, if: 'gr_id.blank?'
-    after_save :push_to_gr, if: 'ministry.present?'
+    before_save :set_guid_from_username, if: -> { gr_id.blank? }
+    after_save :push_to_gr, if: -> { ministry.present? }
 
     def assignments_attributes=(collection)
       collection = collection.map do |attributes|

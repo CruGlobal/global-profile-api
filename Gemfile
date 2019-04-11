@@ -1,12 +1,12 @@
 source 'https://rubygems.org'
+git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
-git_source(:github) do |repo_name|
-  repo_name = "#{repo_name}/#{repo_name}" unless repo_name.include?('/')
-  "https://github.com/#{repo_name}.git"
-end
+ruby '2.3.8'
 
-gem 'rails', '~> 5.1.6'
-gem 'puma', '~> 3.7'
+gem 'rails', '~> 5.2.3'
+gem 'puma', '~> 3.11'
+
+gem 'bootsnap', '>= 1.1.0', require: false
 
 gem 'active_model_serializers', git: 'https://github.com/rails-api/active_model_serializers.git'
 gem 'newrelic_rpm'
@@ -31,8 +31,6 @@ gem 'dogstatsd-ruby'
 
 group :development, :test do
   gem 'byebug', platforms: [:mri, :mingw, :x64_mingw]
-  gem 'capybara', '~> 2.13'
-  gem 'selenium-webdriver'
 
   gem 'dotenv-rails'
   gem 'guard-rubocop'
@@ -55,6 +53,9 @@ group :development do
 end
 
 group :test do
+  gem 'capybara', '>= 2.15'
+  gem 'selenium-webdriver'
+  gem 'chromedriver-helper'
   gem 'webmock'
   gem 'simplecov', require: false
   gem 'factory_girl_rails'
