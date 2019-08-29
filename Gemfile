@@ -30,13 +30,15 @@ gem 'ddtrace'
 gem 'dogstatsd-ruby'
 
 group :development, :test do
+  gem 'brakeman'
+  gem 'bundler-audit'
   gem 'byebug', platforms: [:mri, :mingw, :x64_mingw]
-
   gem 'dotenv-rails'
   gem 'guard-rubocop'
   gem 'guard-rspec'
   gem 'rspec-rails'
   gem 'spring-commands-rspec'
+  gem 'standard'
   gem 'pry-rails'
   gem 'pry-byebug'
   gem 'http_logger'
