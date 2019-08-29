@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 module V1
   class PeopleController < BaseController
     include Consul::Controller
@@ -19,13 +20,13 @@ module V1
       else
         params[:id] = Power.current.person_id
         load_profile
-        render_profile or render_not_found
+        render_profile || render_not_found
       end
     end
 
     def show
       load_profile
-      render_profile or render_not_found
+      render_profile || render_not_found
     end
 
     def create
@@ -39,7 +40,7 @@ module V1
     end
 
     def update
-      render_error('Invalid person_id') and return unless load_profile
+      render_error("Invalid person_id") && return unless load_profile
       if build_profile
         render_profile
       else
@@ -119,7 +120,7 @@ module V1
     def address_nested_params
       params.require(:address).permit(*Address::PERMITTED_ATTRIBUTES)
     rescue ActionController::ParameterMissing
-      return nil
+      nil
     end
 
     def children_nested_params
@@ -129,7 +130,7 @@ module V1
     def spouse_nested_params
       params.require(:spouse).permit(*Spouse::PERMITTED_ATTRIBUTES)
     rescue ActionController::ParameterMissing
-      return nil
+      nil
     end
   end
 end

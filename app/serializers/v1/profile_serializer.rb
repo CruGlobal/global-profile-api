@@ -1,7 +1,8 @@
 # frozen_string_literal: true
+
 module V1
   class ProfileSerializer < ActiveModel::Serializer
-    DATE_FORMAT = '%Y-%m-%d'
+    DATE_FORMAT = "%Y-%m-%d"
     attributes :approved,
                :birth_date,
                :date_joined_staff,

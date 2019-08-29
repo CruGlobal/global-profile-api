@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 module V1
   class BaseController < ApplicationController
     include CruAuthLib::AccessTokenProtectedConcern
@@ -18,7 +19,7 @@ module V1
     end
 
     def render_not_found
-      render_error 'Not Found', status: :not_found
+      render_error "Not Found", status: :not_found
     end
 
     def bool_value(value)
