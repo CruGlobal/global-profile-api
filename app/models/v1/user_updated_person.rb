@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 module V1
   class UserUpdatedPerson < ::Person
     attr_accessor :key_username, :spouse_attributes
@@ -12,7 +13,7 @@ module V1
     after_save :push_to_gr, if: -> { ministry.present? }
 
     def assignments_attributes=(collection)
-      collection = collection.map do |attributes|
+      collection = collection.map { |attributes|
         attributes[:gr_id] = attributes.delete(:assignment_id)
         assignment = Assignment.find_by(gr_id: attributes[:gr_id]) if Uuid.uuid?(attributes[:gr_id])
         attributes[:id] = assignment.id if assignment.present?
@@ -20,7 +21,7 @@ module V1
         ministry_gr_id = attributes.delete(:ministry_id)
         attributes[:ministry] = Ministry.for_gr_id(ministry_gr_id) if ministry_gr_id.present?
         attributes
-      end
+      }
       ids = collection.map { |a| a[:id] }.compact
       assignments.where.not(id: ids).destroy_all
       super collection
@@ -43,7 +44,7 @@ module V1
     def lookup_guid_from_username(username)
       return unless username.present?
       attributes = TheKey::UserAttributes.new(email: username).cas_attributes
-      attributes['theKeyGuid'] if attributes.key?('theKeyGuid')
+      attributes["theKeyGuid"] if attributes.key?("theKeyGuid")
     rescue RestClient::ResourceNotFound
       nil
     end
@@ -57,13 +58,13 @@ module V1
 
     def children_attributes=(collection)
       # Remove all children if collection is missing or empty
-      children.destroy_all and return unless collection.present?
+      children.destroy_all && return unless collection.present?
       ids = collection.map { |a| a[:id] }.compact
       # Destroy children missing from collection
       children.where.not(id: ids).destroy_all
       # Remove children belonging to spouse
       spouse_ids = spouse&.children&.ids
-      collection.reject! { |c| spouse_ids.include? c['id'] } if spouse_ids.present?
+      collection.reject! { |c| spouse_ids.include? c["id"] } if spouse_ids.present?
       # Call super to add/update remaining children
       super collection
     end
@@ -78,8 +79,10 @@ module V1
       if spouse_attributes.key?(:key_username)
         # Lookup spouse_id by key_username
         guid = lookup_guid_from_username(spouse_attributes[:key_username])
-        raise ActiveRecord::RecordInvalid,
-              "TheKey username #{spouse_attributes[:key_username]} is invalid or does not exist." unless guid.present?
+        unless guid.present?
+          raise ActiveRecord::RecordInvalid,
+                "TheKey username #{spouse_attributes[:key_username]} is invalid or does not exist."
+        end
         spouse_attributes[:spouse_id] = Person.gr_id_for_key_guid(guid, ministry) if guid.present?
       elsif [:first_name, :last_name, :email].all? { |k| spouse_attributes.key?(k) }
         # Lookup or create spouse by personal details

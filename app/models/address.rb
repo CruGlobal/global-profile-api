@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 class Address < ApplicationRecord
   PERMITTED_ATTRIBUTES = [:line1, :line2, :city, :state, :postal_code, :country].freeze
 

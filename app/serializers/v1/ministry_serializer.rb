@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 module V1
   class MinistrySerializer < ActiveModel::Serializer
     attribute :gr_id, key: :ministry_id

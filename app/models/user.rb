@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 class User
   attr_accessor :access_token, :person_id, :admin_roles
 
