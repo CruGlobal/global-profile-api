@@ -4,8 +4,10 @@ cache:
   bundler: true
 services:
 - redis-server
+addons:
+  postgresql: "10"
 before_script:
-- bundle exec rake db:create db:migrate RAILS_ENV=test
+- bundle exec rake db:create db:setup RAILS_ENV=test
 script:
 - bundle exec rspec spec
 - bundle exec standardrb
