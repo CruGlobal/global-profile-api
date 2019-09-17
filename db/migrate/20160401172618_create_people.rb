@@ -2,7 +2,7 @@ class CreatePeople < ActiveRecord::Migration
   def change
     create_table :people do |t|
       t.uuid :gr_id
-      t.references :ministry, index: true, foreign_key: { on_delete: :restrict, on_update: :cascade }
+      t.references :ministry, index: true, foreign_key: {on_delete: :restrict, on_update: :cascade}
       t.string :first_name
       t.string :last_name
       t.string :preferred_name

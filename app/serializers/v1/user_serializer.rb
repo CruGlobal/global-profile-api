@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 module V1
   class UserSerializer < ActiveModel::Serializer
     attributes :key_guid, :email, :person_id, :first_name, :last_name, :admin

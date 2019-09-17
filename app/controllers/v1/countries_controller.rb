@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 module V1
   class CountriesController < BaseController
     before_action :authenticate_request
