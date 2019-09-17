@@ -34,7 +34,7 @@ class Person < ApplicationRecord # rubocop:disable Metrics/ClassLength
     update_child_gr_ids_from_entity(entity)
     # PUT relationships, this will create or update existing, relationships not allowed in a POST.
     entity = ministry.gr_ministry_client.entity.put(entity["id"], {entity: entity_relationships},
-                                                    params: {full_response: true})&.dig("entity", "person")
+      params: {full_response: true})&.dig("entity", "person")
     update_gr_ids_from_entity(entity)
   rescue RestClient::BadRequest, RestClient::InternalServerError => error
     errors.add :base, error.message
@@ -84,12 +84,10 @@ class Person < ApplicationRecord # rubocop:disable Metrics/ClassLength
 
   def update_child_gr_ids_from_entity(entity)
     Array.wrap(entity["child"]).each do |child_entity|
-      begin
-        child = children.find(cid_from_entity(child_entity))
-        child.update_column(:gr_id, child_entity["id"])
-      rescue ActiveRecord::RecordNotFound
-        next
-      end
+      child = children.find(cid_from_entity(child_entity))
+      child.update_column(:gr_id, child_entity["id"])
+    rescue ActiveRecord::RecordNotFound
+      next
     end
   end
 
@@ -102,18 +100,16 @@ class Person < ApplicationRecord # rubocop:disable Metrics/ClassLength
 
   def update_ministry_relationship_ids_from_entity(entity)
     Array.wrap(entity["ministry:relationship"]).each do |rel_entity|
-      begin
-        if rel_entity["ministry_of_service"]
-          relationship = assignments.find(cid_from_entity(rel_entity))
-          relationship.update_column(:gr_id, rel_entity["relationship_entity_id"]) if relationship.present?
-        elsif rel_entity["ministry_of_employment"]
-          if employment.id.to_s == cid_from_entity(rel_entity)
-            employment.update_column(:gr_id, rel_entity["relationship_entity_id"])
-          end
+      if rel_entity["ministry_of_service"]
+        relationship = assignments.find(cid_from_entity(rel_entity))
+        relationship.update_column(:gr_id, rel_entity["relationship_entity_id"]) if relationship.present?
+      elsif rel_entity["ministry_of_employment"]
+        if employment.id.to_s == cid_from_entity(rel_entity)
+          employment.update_column(:gr_id, rel_entity["relationship_entity_id"])
         end
-      rescue ActiveRecord::RecordNotFound
-        next
       end
+    rescue ActiveRecord::RecordNotFound
+      next
     end
   end
 

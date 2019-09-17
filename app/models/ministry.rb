@@ -23,7 +23,7 @@ class Ministry < ApplicationRecord
     rescue RestClient::BadRequest
       # Create System
       access_token = system_client.post({system: {name: "Global Profile - #{min_code}"}},
-                                        params: {full_response: "true"})&.dig("system", "access_token")
+        params: {full_response: "true"})&.dig("system", "access_token")
     end
     update(gp_key: access_token) if access_token.present?
     GlobalRegistryClient.new(access_token: gp_key) if gp_key.present?
