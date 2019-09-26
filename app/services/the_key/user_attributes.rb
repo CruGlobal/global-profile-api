@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 module TheKey
   class UserAttributes
     def initialize(email:)
@@ -7,7 +8,7 @@ module TheKey
 
     def cas_attributes
       response = RestClient.get(
-        ENV['CAS_URL'] + "/cas/api/#{ENV['CAS_ACCESS_TOKEN']}/user/attributes?email=#{@email}",
+        ENV["CAS_URL"] + "/cas/api/#{ENV["CAS_ACCESS_TOKEN"]}/user/attributes?email=#{@email}",
         accept: :json
       )
       JSON.parse(response)

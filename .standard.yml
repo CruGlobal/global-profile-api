@@ -1,0 +1,6 @@
+ignore:
+    - app/models/global_registry_client.rb:
+        - Style/MissingRespondToMissing
+        - Style/MethodMissingSuper 
+    - config/initializers/redis.rb:
+        - Security/YAMLLoad 
