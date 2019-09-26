@@ -81,7 +81,7 @@ module V1
         guid = lookup_guid_from_username(spouse_attributes[:key_username])
         unless guid.present?
           raise ActiveRecord::RecordInvalid,
-                "TheKey username #{spouse_attributes[:key_username]} is invalid or does not exist."
+            "TheKey username #{spouse_attributes[:key_username]} is invalid or does not exist."
         end
         spouse_attributes[:spouse_id] = Person.gr_id_for_key_guid(guid, ministry) if guid.present?
       elsif [:first_name, :last_name, :email].all? { |k| spouse_attributes.key?(k) }
