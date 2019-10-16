@@ -27,6 +27,7 @@ gem "assignable_values"
 gem "global_registry"
 gem "ddtrace"
 gem "dogstatsd-ruby"
+gem "awesome_print"
 
 group :development, :test do
   gem "brakeman"
@@ -41,7 +42,6 @@ group :development, :test do
   gem "pry-rails"
   gem "pry-byebug"
   gem "http_logger"
-  gem "awesome_print"
 end
 
 group :development do
