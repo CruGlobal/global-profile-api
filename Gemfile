@@ -10,7 +10,6 @@ gem "bootsnap", ">= 1.1.0", require: false
 
 gem "active_model_serializers", git: "https://github.com/rails-api/active_model_serializers.git"
 gem "newrelic_rpm"
-gem "rails-api-newrelic"
 gem "versionist"
 gem "rack-cors", require: "rack/cors"
 gem "rollbar"
