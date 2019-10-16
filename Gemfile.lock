@@ -236,12 +236,6 @@ GEM
       bundler (>= 1.3.0)
       railties (= 5.2.3)
       sprockets-rails (>= 2.0.0)
-    rails-api (0.4.1)
-      actionpack (>= 3.2.11)
-      railties (>= 3.2.11)
-    rails-api-newrelic (0.0.2)
-      newrelic_rpm
-      rails-api
     rails-dom-testing (2.0.3)
       activesupport (>= 4.2.0)
       nokogiri (>= 1.6)
@@ -415,7 +409,6 @@ DEPENDENCIES
   puma (~> 3.11)
   rack-cors
   rails (~> 5.2.3)
-  rails-api-newrelic
   redis-namespace
   rollbar
   rspec-json_expectations
