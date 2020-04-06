@@ -1,7 +1,7 @@
 source "https://rubygems.org"
 git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
-ruby "2.6.4"
+ruby "2.6.5"
 
 gem "rails", "~> 5.2.3"
 gem "puma", "~> 3.11"
@@ -10,7 +10,6 @@ gem "bootsnap", ">= 1.1.0", require: false
 
 gem "active_model_serializers", git: "https://github.com/rails-api/active_model_serializers.git"
 gem "newrelic_rpm"
-gem "rails-api-newrelic"
 gem "versionist"
 gem "rack-cors", require: "rack/cors"
 gem "rollbar"
@@ -28,6 +27,7 @@ gem "assignable_values"
 gem "global_registry"
 gem "ddtrace"
 gem "dogstatsd-ruby"
+gem "awesome_print"
 
 group :development, :test do
   gem "brakeman"
@@ -42,7 +42,6 @@ group :development, :test do
   gem "pry-rails"
   gem "pry-byebug"
   gem "http_logger"
-  gem "awesome_print"
 end
 
 group :development do
